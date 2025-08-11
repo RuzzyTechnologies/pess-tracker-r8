@@ -1,0 +1,451 @@
+import type { ReactNode } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
+import "./globals.css"
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-svh bg-background text-foreground antialiased">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          storageKey="pess-theme"
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}
+
+/* Smooth theme transition for color-related properties */
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, color, border-color, fill, stroke, box-shadow;
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition *,
+  html.theme-transition *::before,
+  html.theme-transition *::after {
+    transition: none !important;
+  }
+}
+
+"use client"
+import * as React from "react"
+import { useTheme } from "next-themes"
+import { Moon, Sun } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { AnimatePresence, motion } from "framer-motion"
+
+export function ThemeToggle() {
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => setMounted(true), [])
+
+  const isDark = resolvedTheme === "dark"
+  const label = isDark ? "Switch to light mode" : "Switch to dark mode"
+
+  function toggleWithSmoothTransition() {
+    const next = isDark ? "light" : "dark"
+    const root = document.documentElement
+    // Add a temporary class to animate color-related properties
+    root.classList.add("theme-transition")
+    // Switch theme
+    setTheme(next)
+    // Remove after transition window
+    window.setTimeout(() => {
+      root.classList.remove("theme-transition")
+    }, 260)
+  }
+
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" className="opacity-50 pointer-events-none">
+        <Moon className="h-5 w-5" />
+      </Button>
+    )
+  }
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            aria-label={label}
+            variant="ghost"
+            size="icon"
+            onClick={toggleWithSmoothTransition}
+            className="text-slate-700 hover:text-sky-700 dark:text-slate-200 dark:hover:text-sky-300"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={isDark ? "sun" : "moon"}
+                initial={{ rotate: -90, opacity: 0, scale: 0.9 }}
+                animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                exit={{ rotate: 90, opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="inline-flex"
+              >
+                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </motion.span>
+            </AnimatePresence>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{isDark ? "Light mode" : "Dark mode"}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
+
+// components/dashboard-shell.tsx
+// Replace the Background component's wrapper div className to include dark gradient.
+// Replace:
+//   "bg-gradient-to-b from-sky-50 to-white"
+// With:
+//   "bg-gradient-to-b from-sky-50 to-white dark:from-slate-950 dark:to-slate-900"
+
+// components/views/projects-view.tsx
+// Update page title to support dark text:
+// Change: <h1 className="text-xl font-semibold text-slate-900">
+// To:    <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+// Update main Card classes for dark surface:
+// Append: " dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800"
+// Update CardTitle to support dark text:
+// Change: "text-slate-800" -> "text-slate-800 dark:text-slate-100"
+// Empty state text color:
+// Change: "text-slate-500" -> "text-slate-500 dark:text-slate-400"
+// Project list item surface:
+// Change container class "border-sky-100/70 bg-white/70"
+// To: "border-sky-100/70 bg-white/70 dark:border-slate-800 dark:bg-slate-900/70"
+// Inner text colors:
+// - Name: add "dark:text-slate-100"
+// - Description: "text-slate-500" -> "text-slate-500 dark:text-slate-400"
+// SelectTrigger border:
+// Add "dark:border-slate-700"
+// Delete button outline colors:
+// Add "dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
+
+// components/views/project-new-view.tsx
+// Card class: add "dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800"
+// CardTitle: add "dark:text-slate-100"
+// Inputs/SelectTrigger borders: add "dark:border-slate-700"
+// Primary button OK (solid). For Cancel outline button, add "dark:border-slate-700"
+
+// components/views/notifications-view.tsx
+// Heading h1: add "dark:text-slate-100"
+// Action Button (outline): add "dark:border-slate-700 dark:text-sky-300 dark:hover:bg-slate-800/60"
+// Card: add dark surface classes
+// CardTitle: add "dark:text-slate-100"
+// List item container: add "dark:border-slate-800 dark:bg-slate-900/70"
+// Message text: for read/unread add dark variants:
+// - unread: append "dark:text-slate-100"
+// - read: change to "text-slate-500 dark:text-slate-400"
+
+// components/views/settings-view.tsx
+// Page h1: add "dark:text-slate-100"
+// Card(s): add dark surface classes
+// CardTitle: add "dark:text-slate-100"
+// Inputs: add "dark:border-slate-700"
+// Save button is solid; leave as is.
+
+// components/views/staff-tasks-view.tsx
+// Page h1: add "dark:text-slate-100"
+// Card: add dark surface classes
+// CardTitle: add "dark:text-slate-100"
+// Task item container: add "dark:border-slate-800 dark:bg-slate-900/70"
+// Name text: add "dark:text-slate-100"
+// Meta text (xs slate-500): add "dark:text-slate-400"
+// SelectTrigger border: add "dark:border-slate-700"
+// Delete button outline: add "dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
+
+// components/views/task-new-view.tsx
+// Card: add dark surface classes
+// CardTitle: add "dark:text-slate-100"
+// Inputs/SelectTrigger borders: add "dark:border-slate-700"
+// Primary button: leave; Cancel outline add "dark:border-slate-700"
+
+// components/views/time-view.tsx
+// h1: add "dark:text-slate-100"
+// Card: add dark surface classes
+// CardTitle: add "dark:text-slate-100"
+// Inputs borders: add "dark:border-slate-700"
+// "Total today" text: "text-slate-600" -> "text-slate-600 dark:text-slate-400"
+// inner value "text-slate-900" -> add "dark:text-slate-100"
+// Entry list item surface: add "dark:border-slate-800 dark:bg-slate-900/70"
+
+// components/views/admin-users-view.tsx
+// h1: add "dark:text-slate-100"
+// Both Cards: add dark surface classes
+// CardTitles: add "dark:text-slate-100"
+// Inputs/SelectTrigger borders: add "dark:border-slate-700"
+// Member row container: add "dark:border-slate-800 dark:bg-slate-900/70"
+// Name text: add "dark:text-slate-100"
+// Email text (slate-500): add "dark:text-slate-400"
+
+// components/views/admin-settings-view.tsx
+// Page h1: add "dark:text-slate-100"
+// All Cards: add dark surface classes
+// All CardTitles: add "dark:text-slate-100"
+// Inputs/SelectTrigger borders: add "dark:border-slate-700"
+// Workday buttons:
+// - Active ring "ring-sky-600" ok; for inactive, change "bg-white text-slate-700 ring-sky-100 hover:bg-sky-50"
+//   to add dark variants: "dark:bg-slate-900/70 dark:text-slate-300 dark:ring-slate-800 dark:hover:bg-slate-800/60"
+// Pills/badges already use bg-sky; keep.
+// Toggle rows that use "bg-white/70 border-sky-100/70": add "dark:bg-slate-900/70 dark:border-slate-800"
+
+// components/views/staff-settings-view.tsx
+// Page h1: add "dark:text-slate-100"
+// All Cards: add dark surface classes
+// All CardTitles: add "dark:text-slate-100"
+// Inputs/SelectTrigger borders: add "dark:border-slate-700"
+// Toggle rows "bg-white/70 border-sky-100/70": add "dark:bg-slate-900/70 dark:border-slate-800"
+
+// In components/auth/auth-form.tsx:
+//   1) Update the CardTitle and CardDescription colors to support dark mode.
+
+//   Replace:
+//     <CardTitle className="text-lg font-semibold text-slate-900">
+//   With:
+//     <CardTitle className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+
+//   Replace:
+//     <CardDescription className="text-slate-500">
+//   With:
+//     <CardDescription className="text-slate-500 dark:text-slate-400">
+
+// In app/(auth)/layout.tsx:
+//   1) Brand title (left hero):
+//     Replace:
+//       <div className="text-xl font-semibold tracking-tight text-slate-900">PESS Tracker</div>
+//     With:
+//       <div className="text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">PESS Tracker</div>
+
+//   2) Brand tagline:
+//     Replace:
+//       <p className="text-sm text-slate-500">Project Execution, Strategy, and Supervision</p>
+//     With:
+//       <p className="text-sm text-slate-500 dark:text-slate-400">Project Execution, Strategy, and Supervision</p>
+
+//   3) Main hero heading:
+//     Replace:
+//       <h1 className="mb-2 text-2xl font-semibold text-slate-900">Plan, execute, and supervise with clarity</h1>
+//     With:
+//       <h1 className="mb-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">Plan, execute, and supervise with clarity</h1>
+
+//   4) Hero description:
+//     Replace:
+//       <p className="mb-6 text-sm leading-relaxed text-slate-600">
+//     With:
+//       <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+
+//   5) Legal text:
+//     Replace:
+//       <div className="mt-6 text-xs text-slate-500">
+//     With:
+//       <div className="mt-6 text-xs text-slate-500 dark:text-slate-400">
+
+//   6) Mobile brand title (right form panel, lg:hidden header):
+//     Replace:
+//       <span className="text-lg font-semibold tracking-tight text-slate-900">PESS Tracker</span>
+//     With:
+//       <span className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">PESS Tracker</span>
+
+//   7) Mobile tagline:
+//     Replace:
+//       <p className="mt-1 text-xs text-slate-500">Project Execution, Strategy, and Supervision</p>
+//     With:
+//       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Project Execution, Strategy, and Supervision</p>
+
+
+// In pess-tracker.tsx:
+//   1) SectionBanner heading and subtitle:
+//     Replace:
+//       <div className="text-sm font-semibold text-slate-900">{title}</div>
+//     With:
+//       <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</div>
+
+//     Replace:
+//       <div className="text-xs text-slate-500">{subtitle}</div>
+//     With:
+//       <div className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</div>
+
+//   2) Kpi label and value colors:
+//     Replace:
+//       <CardTitle className="text-xs font-medium text-slate-500">{title}</CardTitle>
+//     With:
+//       <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400">{title}</CardTitle>
+
+//     Replace:
+//       <div className="text-2xl font-semibold tracking-tight text-slate-900">{value}</div>
+//     With:
+//       <div className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{value}</div>
+
+//   3) SectionHeader title:
+//     Replace:
+//       <div className="text-sm font-medium text-slate-600">{title}</div>
+//     With:
+//       <div className="text-sm font-medium text-slate-600 dark:text-slate-300">{title}</div>
+
+//   4) All CardTitle headings in dashboards:
+//     Replace all occurrences of:
+//       className="text-slate-800"
+//     With:
+//       className="text-slate-800 dark:text-slate-100"
+//     Examples to be updated in this file include (but are not limited to):
+//       - Activity Feed
+//       - Upcoming Deadlines
+//       - My Tasks
+//       - Time Tracker
+//       - My Projects
+//       - Notifications
+//       - System Activity
+//       - Roles & Access
+//       - Approvals Queue
+//       - Access Controls
+
+//   5) Any remaining primary headings using text-slate-900 in this file (e.g., if present in banners/cards):
+//     Append dark:text-slate-100 to ensure readability in dark mode.
+
+
+// In components/app-sidebar.tsx:
+//   1) Sidebar group labels (treat as section headings in the nav):
+//     Replace:
+//       <SidebarGroupLabel className="text-slate-500">
+//     With:
+//       <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">
+
+//   2) Where labels repeat for Staff/Admin/Projects groups, apply the same change.
+
+// lib/data.ts
+// Add BroadcastChannel for cross-tab realtime and subscribe to storage events in useData. Also post a message on save().
+// Replace the save() and useData() bodies and add the channel near the KEY constant.
+// 1) Right after:
+//    const KEY = "pess:data"
+//    add:
+//    const BC_NAME = "pess:bc"
+//    let bc: BroadcastChannel | null = null
+//    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+//      bc = new BroadcastChannel(BC_NAME)
+//    }
+// 2) Replace the save function with:
+//    export function save(next: Data) {
+//      localStorage.setItem(KEY, JSON.stringify(next))
+//      // In-tab updates
+//      window.dispatchEvent(new Event("pess:data"))
+//      // Cross-tab broadcast (faster than polling storage listeners alone)
+//      bc?.postMessage({ type: "data:update" })
+//    }
+// 3) Replace the useData hook implementation with:
+//    export function useData<T>(selector: (data: Data) => T): [T, (updater: (data: Data) => Data) => void] {
+//      const [state, setState] = React.useState(() => selector(load()))
+//      React.useEffect(() => {
+//        const updateFromStore = () => setState(selector(load()))
+//        // In-tab custom event
+//        window.addEventListener("pess:data", updateFromStore)
+//        // Cross-tab via storage event
+//        const onStorage = (e: StorageEvent) => {
+//          if (e.key === KEY) updateFromStore()
+//        }
+//        window.addEventListener("storage", onStorage)
+//        // Cross-tab via BroadcastChannel
+//        const onBC = (e: MessageEvent) => {
+//          if ((e?.data as any)?.type === "data:update") updateFromStore()
+//        }
+//        bc?.addEventListener?.("message", onBC)
+//        return () => {
+//          window.removeEventListener("pess:data", updateFromStore)
+//          window.removeEventListener("storage", onStorage)
+//          bc?.removeEventListener?.("message", onBC)
+//        }
+//      }, [selector])
+//      const update = (updater: (data: Data) => Data) => {
+//        const next = updater(load())
+//        save(next)
+//        setState(selector(next))
+//      }
+//      return [state, update]
+//    }
+
+// components/views/admin-users-view.tsx
+// Add a lightweight interval to re-evaluate "Online" vs "Last seen" in realtime even without writes.
+// 1) After React state declarations, add:
+//    const [, force] = React.useReducer((x) => x + 1, 0)
+//    React.useEffect(() => {
+//      const t = setInterval(force, 5_000) // refresh presence labels every 5s
+//      return () => clearInterval(t)
+//    }, [])
+
+// components/views/admin-tasks-view.tsx
+// Add a small interval to re-evaluate "Overdue" and "Due this week" real-time without requiring writes.
+// 1) After React state declarations, add:
+//    const [, tick] = React.useReducer((x) => x + 1, 0)
+//    React.useEffect(() => {
+//      const t = setInterval(tick, 15_000) // recompute derived task statuses every 15s
+//      return () => clearInterval(t)
+//    }, [])
+
+// components/presence-client.tsx
+// Slightly increase realtime responsiveness by throttling interaction pings and ensuring frequent heartbeats.
+// Replace the component body with:
+//    "use client"
+//
+//    import * as React from "react"
+//    import { DataAPI, getCurrentUser } from "@/lib/data"
+//
+//    export function PresenceClient({
+//      intervalMs = 12_000,
+//      interactionThrottleMs = 10_000,
+//    }: {
+//      intervalMs?: number
+//      interactionThrottleMs?: number
+//    }) {
+//      const me = getCurrentUser()
+//      const lastInteractionRef = React.useRef(0)
+//
+//      React.useEffect(() => {
+//        if (!me) return
+//        const ping = () => DataAPI.presence.ping(me.id)
+//        ping() // on mount
+//
+//        const onFocus = () => ping()
+//        const onVisible = () => {
+//          if (document.visibilityState === "visible") ping()
+//        }
+//        const onInteract = () => {
+//          const now = Date.now()
+//          if (now - lastInteractionRef.current >= interactionThrottleMs) {
+//            lastInteractionRef.current = now
+//            ping()
+//          }
+//        }
+//        const onBeforeUnload = () => {
+//          try { ping() } catch {}
+//        }
+//
+//        window.addEventListener("focus", onFocus)
+//        document.addEventListener("visibilitychange", onVisible)
+//        window.addEventListener("beforeunload", onBeforeUnload)
+//        const interactions = ["mousemove", "keydown", "click", "scroll", "touchstart"] as const
+//        interactions.forEach((ev) => window.addEventListener(ev, onInteract, { passive: true }))
+//
+//        const t = window.setInterval(ping, intervalMs)
+//        return () => {
+//          window.clearInterval(t)
+//          window.removeEventListener("focus", onFocus)
+//          document.removeEventListener("visibilitychange", onVisible)
+//          window.removeEventListener("beforeunload", onBeforeUnload)
+//          interactions.forEach((ev) => window.removeEventListener(ev, onInteract))
+//        }
+//      }, [me, intervalMs, interactionThrottleMs])
+//
+//      return null
+//    }

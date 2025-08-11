@@ -1,0 +1,541 @@
+"use client"
+
+import * as React from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "./components/app-sidebar"
+import { TopNav } from "./components/top-nav"
+import {
+  Activity,
+  CalendarClock,
+  CheckCircle2,
+  Users,
+  ShieldCheck,
+  Timer,
+  Plus,
+  UserPlus,
+  Check,
+  Eye,
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { AnimatePresence, motion } from "framer-motion"
+
+const pageVariants = {
+  initial: { opacity: 0, y: 12 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+  exit: { opacity: 0, y: -8, transition: { duration: 0.25, ease: "easeIn" } },
+}
+
+function Background({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative flex min-h-svh flex-1 flex-col overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-950 dark:to-slate-900">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-12 -left-12 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl dark:bg-slate-800/40" />
+        <div className="absolute top-1/3 -right-16 h-72 w-72 rounded-full bg-sky-100/60 blur-3xl dark:bg-slate-700/40" />
+        <div className="absolute bottom-[-6rem] left-1/4 h-96 w-96 rounded-full bg-sky-300/20 blur-3xl dark:bg-slate-600/30" />
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  )
+}
+
+function SurfaceCard(props: React.ComponentProps<typeof Card>) {
+  return (
+    <Card
+      {...props}
+      className={[
+        "backdrop-blur supports-[backdrop-filter]:bg-white/75 dark:supports-[backdrop-filter]:bg-slate-900/70",
+        "border border-sky-100/70 dark:border-slate-800 shadow-sm",
+        "transition-all hover:shadow-md hover:-translate-y-[1px] active:translate-y-0",
+        props.className,
+      ].join(" ")}
+    />
+  )
+}
+
+function SectionBanner({
+  icon,
+  title,
+  subtitle,
+}: {
+  icon: React.ReactNode
+  title: string
+  subtitle: string
+}) {
+  return (
+    <SurfaceCard>
+      <div className="flex items-center gap-3 p-4">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-sky-100 text-sky-700">{icon}</div>
+        <div className="flex flex-col">
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{title}</div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</div>
+        </div>
+      </div>
+    </SurfaceCard>
+  )
+}
+
+function Kpi({
+  title,
+  value,
+  icon,
+  hint,
+}: {
+  title: string
+  value: string
+  icon?: React.ReactNode
+  hint?: string
+}) {
+  return (
+    <SurfaceCard>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xs font-medium text-slate-500 dark:text-slate-400">{title}</CardTitle>
+          <div className="text-sky-600">{icon}</div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{value}</div>
+        {hint ? <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</div> : null}
+      </CardContent>
+    </SurfaceCard>
+  )
+}
+
+function Pill({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span
+      className={[
+        "inline-flex items-center rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-sky-100",
+        className,
+      ].join(" ")}
+    >
+      {children}
+    </span>
+  )
+}
+
+function QuickActionsCard({
+  children,
+  title,
+  subtitle,
+}: {
+  children: React.ReactNode
+  title: string
+  subtitle?: string
+}) {
+  return (
+    <SurfaceCard>
+      <div className="flex flex-col gap-2 p-3 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <div className="text-sm font-medium text-slate-800 dark:text-slate-100">{title}</div>
+          {subtitle ? <div className="text-xs text-slate-500 dark:text-slate-400">{subtitle}</div> : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">{children}</div>
+      </div>
+    </SurfaceCard>
+  )
+}
+
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-2">
+      <SidebarTrigger className="-ml-1 text-slate-600 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300" />
+      <Separator orientation="vertical" className="mr-2 h-4 bg-sky-100 dark:bg-slate-700" />
+      <div className="text-sm font-medium text-slate-600 dark:text-slate-300">{title}</div>
+    </div>
+  )
+}
+
+function MainDashboard() {
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
+      <SectionHeader title="Overview" />
+      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
+        <Kpi title="Active Projects" value="8" icon={<Users className="h-4 w-4" />} hint="+2 this month" />
+        <Kpi title="Tasks Due This Week" value="24" icon={<CalendarClock className="h-4 w-4" />} hint="5 today" />
+        <Kpi title="Overdue Tasks" value="5" icon={<Activity className="h-4 w-4" />} hint="-2 vs last week" />
+        <Kpi title="Completion Rate" value="76%" icon={<CheckCircle2 className="h-4 w-4" />} hint="30-day rolling" />
+      </div>
+
+      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
+        <SurfaceCard className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Activity Feed</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              New comment on Task #231
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              Project "Website Revamp" moved to In Progress
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              Alice logged 1h on "API Integration"
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Upcoming Deadlines</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Milestone: API v1 freeze</span>
+              <span className="text-sky-700">Aug 18</span>
+            </div>
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Task: QA Test Plan</span>
+              <span className="text-sky-700">Aug 20</span>
+            </div>
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Task: Final Copy Review</span>
+              <span className="text-sky-700">Aug 22</span>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+      </div>
+    </div>
+  )
+}
+
+function StaffDashboard() {
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
+      <SectionBanner
+        icon={<Timer className="h-4 w-4" />}
+        title="Staff Mode"
+        subtitle="Your tasks, time, and personal focus"
+      />
+      <QuickActionsCard title="Quick actions" subtitle="Stay on track">
+        <Button variant="outline" className="h-8 border-sky-200 text-sky-700 hover:bg-sky-50 bg-transparent">
+          <Timer className="mr-2 h-4 w-4" /> Start focus timer
+        </Button>
+        <Button variant="outline" className="h-8 border-sky-200 text-sky-700 hover:bg-sky-50 bg-transparent">
+          <Plus className="mr-2 h-4 w-4" /> New task
+        </Button>
+        <Button className="h-8 bg-sky-600 text-white hover:bg-sky-700">
+          <Check className="mr-2 h-4 w-4" /> Log time
+        </Button>
+      </QuickActionsCard>
+
+      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
+        {/* My Tasks - span 2 columns on sm+ and lg */}
+        <SurfaceCard className="sm:col-span-2 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">My Tasks</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-sky-100/70 bg-white/70 p-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="h-2 w-2 rounded-full bg-sky-400" aria-hidden="true" />
+                <span className="truncate">Implement "Upload files"</span>
+                <Pill>High</Pill>
+              </div>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">Due Aug 12</span>
+            </div>
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-sky-100/70 bg-white/70 p-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="h-2 w-2 rounded-full bg-sky-300" aria-hidden="true" />
+                <span className="truncate">Fix timeline labels</span>
+                <Pill className="bg-white/80 text-sky-700">Medium</Pill>
+              </div>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">Due Aug 13</span>
+            </div>
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-sky-100/70 bg-white/70 p-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="h-2 w-2 rounded-full bg-sky-200" aria-hidden="true" />
+                <span className="truncate">Write daily log</span>
+                <Pill className="bg-white/80 text-sky-700">Today</Pill>
+              </div>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">Today</span>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        {/* Time Tracker - 1 column */}
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Time Tracker</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="flex items-center justify-between">
+              <span>Today</span>
+              <span className="font-medium text-slate-900">2h 15m</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-sky-50">
+              <div className="h-2 w-2/3 rounded-full bg-sky-300/70" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span>This Week</span>
+              <span className="font-medium text-slate-900">8h 40m</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-sky-50">
+              <div className="h-2 w-3/4 rounded-full bg-sky-400/60" />
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        {/* My Projects - 1 column */}
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">My Projects</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Website Revamp</span>
+              <Pill>In Progress</Pill>
+            </div>
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Grant 2025</span>
+              <Pill>Planning</Pill>
+            </div>
+            <div className="flex items-center justify-between rounded-md bg-sky-50/60 p-2">
+              <span>Mobile MVP</span>
+              <Pill>Review</Pill>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        {/* Notifications - span 2 columns on sm+ and lg */}
+        <SurfaceCard className="sm:col-span-2 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Notifications</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3">
+              You were assigned to "API Integration"
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3">
+              New comment on "Design QA": please review icons
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3">Reminder: Daily log due 5:00 PM</div>
+          </CardContent>
+        </SurfaceCard>
+      </div>
+    </div>
+  )
+}
+
+function AdminDashboard() {
+  return (
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
+      <SectionBanner
+        icon={<ShieldCheck className="h-4 w-4" />}
+        title="Admin Mode"
+        subtitle="Organization-wide supervision, roles, and approvals"
+      />
+      <QuickActionsCard title="Admin actions" subtitle="Manage access and oversight">
+        <Button className="h-8 bg-sky-600 text-white hover:bg-sky-700">
+          <UserPlus className="mr-2 h-4 w-4" /> Invite user
+        </Button>
+        <Button variant="outline" className="h-8 border-sky-200 text-sky-700 hover:bg-sky-50 bg-transparent">
+          <ShieldCheck className="mr-2 h-4 w-4" /> Review approvals
+        </Button>
+        <Button variant="outline" className="h-8 border-sky-200 text-sky-700 hover:bg-sky-50 bg-transparent">
+          <Plus className="mr-2 h-4 w-4" /> New role
+        </Button>
+      </QuickActionsCard>
+
+      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
+        <Kpi title="All Projects" value="23" icon={<Users className="h-4 w-4" />} />
+        <Kpi title="Completed" value="11" icon={<CheckCircle2 className="h-4 w-4" />} />
+        <Kpi title="Members" value="47" icon={<Users className="h-4 w-4" />} />
+        <Kpi title="Pending Approvals" value="3" icon={<Activity className="h-4 w-4" />} />
+      </div>
+
+      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
+        <SurfaceCard className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">System Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              <div className="flex items-center justify-between">
+                <span>Role update: manager → admin for user jane@acme.org</span>
+                <span className="text-[10px] text-slate-500">2m ago</span>
+              </div>
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              <div className="flex items-center justify-between">
+                <span>New user invited: tom@ngo.org</span>
+                <span className="text-[10px] text-slate-500">9m ago</span>
+              </div>
+            </div>
+            <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm text-slate-700">
+              <div className="flex items-center justify-between">
+                <span>Approval requested for Project "Grant 2025"</span>
+                <span className="text-[10px] text-slate-500">15m ago</span>
+              </div>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Roles & Access</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <div className="flex items-center justify-between">
+              <span>Admins</span>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">3</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Managers</span>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">8</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Staff</span>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">30</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Clients</span>
+              <span className="rounded-full bg-sky-50 px-2 py-0.5 text-xs text-sky-700">6</span>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+      </div>
+
+      <div className="grid min-w-0 gap-4 sm:grid-cols-2">
+        {/* Approvals Queue */}
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Approvals Queue</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            {/* Item 1 */}
+            <div className="flex flex-col gap-2 rounded-md bg-sky-50/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="min-w-0 text-slate-800">Project "Grant 2025"</span>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-7 border-sky-200 px-2 text-xs text-sky-700 hover:bg-sky-100 bg-transparent"
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" /> Review
+                </Button>
+                <Button className="h-7 bg-sky-600 px-2 text-xs text-white hover:bg-sky-700">
+                  <Check className="mr-1 h-3.5 w-3.5" /> Approve
+                </Button>
+              </div>
+            </div>
+            {/* Item 2 */}
+            <div className="flex flex-col gap-2 rounded-md bg-sky-50/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="min-w-0 text-slate-800">Task "Budget Review"</span>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-7 border-sky-200 px-2 text-xs text-sky-700 hover:bg-sky-100 bg-transparent"
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" /> Review
+                </Button>
+                <Button className="h-7 bg-sky-600 px-2 text-xs text-white hover:bg-sky-700">
+                  <Check className="mr-1 h-3.5 w-3.5" /> Approve
+                </Button>
+              </div>
+            </div>
+            {/* Item 3 */}
+            <div className="flex flex-col gap-2 rounded-md bg-sky-50/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+              <span className="min-w-0 text-slate-800">Task "Privacy Policy"</span>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-7 border-sky-200 px-2 text-xs text-sky-700 hover:bg-sky-100 bg-transparent"
+                >
+                  <Eye className="mr-1 h-3.5 w-3.5" /> Review
+                </Button>
+                <Button className="h-7 bg-sky-600 px-2 text-xs text-white hover:bg-sky-700">
+                  <Check className="mr-1 h-3.5 w-3.5" /> Approve
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+
+        {/* Access Controls */}
+        <SurfaceCard>
+          <CardHeader>
+            <CardTitle className="text-slate-800 dark:text-slate-100">Access Controls</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span>Project creation</span>
+              <span className="shrink-0 rounded-full bg-white/70 px-2 py-0.5 text-xs text-slate-700 ring-1 ring-sky-100">
+                Admins, Managers
+              </span>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span>Approve tasks</span>
+              <span className="shrink-0 rounded-full bg-white/70 px-2 py-0.5 text-xs text-slate-700 ring-1 ring-sky-100">
+                Admins
+              </span>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <span>Manage roles</span>
+              <span className="shrink-0 rounded-full bg-white/70 px-2 py-0.5 text-xs text-slate-700 ring-1 ring-sky-100">
+                Admins
+              </span>
+            </div>
+          </CardContent>
+        </SurfaceCard>
+      </div>
+    </div>
+  )
+}
+
+export default function PessTracker() {
+  const [section, setSection] = React.useState<"main" | "staff" | "admin">("main")
+
+  React.useEffect(() => {
+    const apply = () => {
+      const path = typeof window !== "undefined" ? window.location.pathname : "/"
+      if (path.startsWith("/admin")) {
+        setSection("admin")
+        return
+      }
+      if (path.startsWith("/staff")) {
+        setSection("staff")
+        return
+      }
+      const h = (typeof window !== "undefined" && window.location.hash) || ""
+      if (h.startsWith("#admin")) setSection("admin")
+      else if (h.startsWith("#staff")) setSection("staff")
+      else setSection("main")
+    }
+    apply()
+    window.addEventListener("hashchange", apply)
+    return () => window.removeEventListener("hashchange", apply)
+  }, [])
+
+  return (
+    <SidebarProvider>
+      <AppSidebar />
+      {/* Using inset layout with a floating sidebar for a modern aesthetic */}
+      <SidebarInset>
+        <Background>
+          <TopNav />
+          <div className="flex-1 overflow-y-auto">
+            <AnimatePresence mode="wait">
+              <motion.div key={section} variants={pageVariants} initial="initial" animate="animate" exit="exit">
+                {section === "admin" ? (
+                  <AdminDashboard />
+                ) : section === "staff" ? (
+                  <StaffDashboard />
+                ) : (
+                  <MainDashboard />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </Background>
+      </SidebarInset>
+    </SidebarProvider>
+  )
+}
