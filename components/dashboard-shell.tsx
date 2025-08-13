@@ -9,7 +9,7 @@ import { PresenceClient } from "@/components/presence-client"
 
 function Background({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-svh flex-1 flex-col overflow-hidden bg-gradient-to-b from-sky-50 to-white dark:from-slate-950 dark:to-slate-900">
+    <div className="relative flex min-h-svh flex-1 flex-col overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-12 -left-12 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
         <div className="absolute top-1/3 -right-16 h-72 w-72 rounded-full bg-sky-100/60 blur-3xl" />

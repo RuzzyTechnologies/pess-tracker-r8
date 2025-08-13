@@ -61,11 +61,11 @@ export default function AdminSettingsView() {
 
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-6 space-y-5">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Organization Settings</h1>
+      <h1 className="text-xl font-semibold text-foreground">Organization Settings</h1>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-card border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">General</CardTitle>
+          <CardTitle className="text-foreground">General</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -73,7 +73,7 @@ export default function AdminSettingsView() {
             <Input
               id="orgname"
               defaultValue={org.name}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-border"
               onBlur={(e) => {
                 const v = e.currentTarget.value.trim()
                 if (v && v !== org.name) DataAPI.updateOrg({ name: v })
@@ -86,7 +86,7 @@ export default function AdminSettingsView() {
               value={org.weekStart}
               onValueChange={(v) => DataAPI.updateOrg({ weekStart: v as OrgSettings["weekStart"] })}
             >
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -103,7 +103,7 @@ export default function AdminSettingsView() {
               min={60}
               step={15}
               defaultValue={org.workdayMinutes}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-border"
               onBlur={(e) => {
                 const n = Math.max(60, Number(e.currentTarget.value || 480))
                 if (n !== org.workdayMinutes) DataAPI.updateOrg({ workdayMinutes: n })
@@ -124,7 +124,7 @@ export default function AdminSettingsView() {
                       "h-8 rounded-md px-2 text-sm ring-1",
                       active
                         ? "bg-sky-600 text-white ring-sky-600"
-                        : "bg-white text-slate-700 ring-sky-100 hover:bg-sky-50 dark:bg-slate-900/70 dark:text-slate-300 dark:ring-slate-800 dark:hover:bg-slate-800/60",
+                        : /* Using semantic colors */ "bg-card text-muted-foreground ring-border hover:bg-accent",
                     ].join(" ")}
                     aria-pressed={active}
                   >
@@ -137,9 +137,9 @@ export default function AdminSettingsView() {
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-card border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Permissions & Approvals</CardTitle>
+          <CardTitle className="text-foreground">Permissions & Approvals</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="grid gap-3 sm:grid-cols-2">
@@ -174,14 +174,14 @@ export default function AdminSettingsView() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+            <label className="inline-flex items-center justify-between gap-2 rounded-md border-border bg-card p-3 text-sm">
               <span>Require approval for new projects</span>
               <Switch
                 checked={org.approvals.requireForProject}
                 onCheckedChange={(v) => DataAPI.updateOrg({ approvals: { ...org.approvals, requireForProject: v } })}
               />
             </label>
-            <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+            <label className="inline-flex items-center justify-between gap-2 rounded-md border-border bg-card p-3 text-sm">
               <span>Require approval for High priority tasks</span>
               <Switch
                 checked={org.approvals.requireForHighPriorityTasks}
@@ -194,9 +194,9 @@ export default function AdminSettingsView() {
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-card border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Workflow Statuses</CardTitle>
+          <CardTitle className="text-foreground">Workflow Statuses</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
@@ -223,7 +223,7 @@ export default function AdminSettingsView() {
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
               placeholder="Add a status"
-              className="max-w-xs border-sky-100 dark:border-slate-700"
+              className="max-w-xs border-border"
             />
             <Button onClick={addStatus} className="bg-sky-600 text-white hover:bg-sky-700">
               <Plus className="mr-2 h-4 w-4" /> Add
@@ -232,9 +232,9 @@ export default function AdminSettingsView() {
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-card border-border shadow-sm">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Notifications & Security</CardTitle>
+          <CardTitle className="text-foreground">Notifications & Security</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -247,7 +247,7 @@ export default function AdminSettingsView() {
                 })
               }
             >
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -257,14 +257,14 @@ export default function AdminSettingsView() {
               </SelectContent>
             </Select>
           </div>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border-border bg-card p-3 text-sm">
             <span>Require 2FA for members</span>
             <Switch
               checked={org.security.require2FA}
               onCheckedChange={(v) => DataAPI.updateOrg({ security: { ...org.security, require2FA: v } })}
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border-border bg-card p-3 text-sm">
             <span>Allow public projects</span>
             <Switch
               checked={org.security.allowPublicProjects}
@@ -277,7 +277,7 @@ export default function AdminSettingsView() {
               id="domain"
               placeholder="e.g. company.com"
               defaultValue={org.security.inviteDomain || ""}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-border"
               onBlur={(e) =>
                 DataAPI.updateOrg({
                   security: { ...org.security, inviteDomain: e.currentTarget.value.trim() || undefined },

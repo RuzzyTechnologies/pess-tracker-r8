@@ -82,7 +82,7 @@ export function ChatList({
       <ScrollArea className="flex-1">
         <div className="space-y-2 p-4 pt-0">
           {threads.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
               No chats yet. Click + to start a conversation.
             </div>
           ) : (
@@ -99,23 +99,23 @@ export function ChatList({
                   key={t.id}
                   className={[
                     "w-full rounded-lg p-3 text-left transition-colors",
-                    active ? "bg-sky-100 dark:bg-sky-900/20" : "hover:bg-slate-100 dark:hover:bg-slate-800",
+                    active ? "bg-accent" : "hover:bg-accent/50",
                   ].join(" ")}
                   onClick={() => (onSelect ? onSelect(t.id) : router.push(`/chat/${t.id}`))}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-sky-500 text-white">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                       <MessageCircle className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate font-medium text-slate-900 dark:text-slate-100">{name}</span>
-                        <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">{time}</span>
+                        <span className="truncate font-medium text-foreground">{name}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">{time}</span>
                       </div>
-                      <p className="mt-1 truncate text-sm text-slate-600 dark:text-slate-300">{preview}</p>
+                      <p className="mt-1 truncate text-sm text-muted-foreground">{preview}</p>
                     </div>
                     {t.unread > 0 && (
-                      <span className="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-sky-500 px-1.5 text-xs font-medium text-white">
+                      <span className="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground">
                         {t.unread}
                       </span>
                     )}

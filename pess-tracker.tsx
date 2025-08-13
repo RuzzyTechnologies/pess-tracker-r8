@@ -19,13 +19,6 @@ import {
   Eye,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { AnimatePresence, motion } from "framer-motion"
-
-const pageVariants = {
-  initial: { opacity: 0, y: 12 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.25, ease: "easeIn" } },
-}
 
 function Background({ children }: { children: React.ReactNode }) {
   return (
@@ -35,13 +28,7 @@ function Background({ children }: { children: React.ReactNode }) {
         <div className="absolute top-1/3 -right-16 h-72 w-72 rounded-full bg-sky-100/60 blur-3xl dark:bg-slate-700/40" />
         <div className="absolute bottom-[-6rem] left-1/4 h-96 w-96 rounded-full bg-sky-300/20 blur-3xl dark:bg-slate-600/30" />
       </div>
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-      >
-        {children}
-      </motion.div>
+      {children}
     </div>
   )
 }
@@ -517,22 +504,11 @@ export default function PessTracker() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      {/* Using inset layout with a floating sidebar for a modern aesthetic */}
       <SidebarInset>
         <Background>
           <TopNav />
           <div className="flex-1 overflow-y-auto">
-            <AnimatePresence mode="wait">
-              <motion.div key={section} variants={pageVariants} initial="initial" animate="animate" exit="exit">
-                {section === "admin" ? (
-                  <AdminDashboard />
-                ) : section === "staff" ? (
-                  <StaffDashboard />
-                ) : (
-                  <MainDashboard />
-                )}
-              </motion.div>
-            </AnimatePresence>
+            {section === "admin" ? <AdminDashboard /> : section === "staff" ? <StaffDashboard /> : <MainDashboard />}
           </div>
         </Background>
       </SidebarInset>
