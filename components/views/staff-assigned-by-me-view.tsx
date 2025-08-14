@@ -118,7 +118,7 @@ export default function StaffAssignedByMeView() {
   return (
     <div className="mx-auto w-full max-w-7xl p-4 md:p-6 space-y-4">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Assigned by Me</h1>
+        <h1 className="text-xl font-semibold text-foreground">Assigned by Me</h1>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Search tasks or assignees..."
@@ -149,11 +149,11 @@ export default function StaffAssignedByMeView() {
       {/* Filters */}
       <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-slate-800 dark:text-slate-100">Filters</CardTitle>
+          <CardTitle className="text-foreground">Filters</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Assignee</div>
+            <div className="text-xs text-muted-foreground">Assignee</div>
             <Select value={assigneeFilter} onValueChange={(v) => setAssigneeFilter(v as any)}>
               <SelectTrigger className="h-9 border-sky-100 dark:border-slate-700">
                 <SelectValue />
@@ -167,7 +167,7 @@ export default function StaffAssignedByMeView() {
             </Select>
           </div>
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Status</div>
+            <div className="text-xs text-muted-foreground">Status</div>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter((v as Task["status"]) || "all")}>
               <SelectTrigger className="h-9 border-sky-100 dark:border-slate-700">
                 <SelectValue />
@@ -181,7 +181,7 @@ export default function StaffAssignedByMeView() {
             </Select>
           </div>
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Quick</div>
+            <div className="text-xs text-muted-foreground">Quick</div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -202,11 +202,11 @@ export default function StaffAssignedByMeView() {
       {/* List */}
       <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Tasks</CardTitle>
+          <CardTitle className="text-foreground">Tasks</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           {items.length === 0 ? (
-            <div className="text-slate-500 dark:text-slate-400">
+            <div className="text-muted-foreground">
               No tasks match your filters. Try "Others or Unassigned" or set Status to "All".
             </div>
           ) : (
@@ -222,8 +222,8 @@ export default function StaffAssignedByMeView() {
                   className="flex flex-col gap-2 rounded-md border border-white/20 bg-white/10 p-3 sm:flex-row sm:items-center sm:justify-between backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10"
                 >
                   <div className="min-w-0">
-                    <div className="truncate font-medium text-slate-900 dark:text-slate-100">{t.title}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="truncate font-medium text-foreground">{t.title}</div>
+                    <div className="text-xs text-muted-foreground">
                       Status: {t.status}
                       {" • "}
                       Priority: {t.priority}
@@ -256,11 +256,11 @@ export default function StaffAssignedByMeView() {
                       <span className="truncate">
                         {assigneeUser ? (
                           <>
-                            <span className="font-medium text-slate-900 dark:text-slate-100">{assigneeUser.name}</span>{" "}
-                            <span className="text-xs text-slate-500 dark:text-slate-400">({assigneeUser.email})</span>
+                            <span className="font-medium text-foreground">{assigneeUser.name}</span>{" "}
+                            <span className="text-xs text-muted-foreground">({assigneeUser.email})</span>
                           </>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-400">Unassigned</span>
+                          <span className="text-muted-foreground">Unassigned</span>
                         )}
                       </span>
                     </div>
@@ -279,10 +279,10 @@ function Kpi({ label, value, icon }: { label: string; value: string; icon?: Reac
   return (
     <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-medium text-slate-500 dark:text-white">{label}</div>
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
         {icon}
       </div>
-      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{value}</div>
+      <div className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{value}</div>
     </div>
   )
 }

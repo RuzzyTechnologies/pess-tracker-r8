@@ -134,7 +134,7 @@ export default function AdminTasksView() {
   return (
     <div className="mx-auto w-full max-w-7xl p-4 md:p-6 space-y-4">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Tasks</h1>
+        <h1 className="text-xl font-semibold text-foreground">Tasks</h1>
         <div className="flex items-center gap-2">
           <Input
             placeholder="Search tasks..."
@@ -343,10 +343,10 @@ function Kpi({ label, value, icon }: { label: string; value: string; icon?: Reac
   return (
     <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-medium text-slate-500 dark:text-white">{label}</div>
+        <div className="text-xs font-medium text-muted-foreground">{label}</div>
         {icon}
       </div>
-      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{value}</div>
+      <div className="mt-1 text-2xl font-semibold tracking-tight text-foreground">{value}</div>
     </div>
   )
 }

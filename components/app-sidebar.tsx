@@ -1,16 +1,13 @@
 "use client"
 
-import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
-
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
-
-import { DropdownMenuLabel } from "@/components/ui/dropdown-menu"
-
-import { DropdownMenuContent } from "@/components/ui/dropdown-menu"
-
-import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-
-import { DropdownMenu } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu"
 
 import type { ReactElement } from "react"
 import Link from "next/link"
@@ -62,7 +59,7 @@ type Item = {
 }
 
 const mainItems: Item[] = [
-  { title: "Dashboard", icon: <LayoutGrid />, href: "#", tooltip: "Overview", isActive: true },
+  { title: "Dashboard", icon: <LayoutGrid />, href: "#", tooltip: "Overview" },
   { title: "Projects", icon: <KanbanSquare />, href: "#projects", tooltip: "All projects", badge: 8 },
   { title: "Chat", icon: <MessageCircle />, href: "#chat", tooltip: "Direct messages" },
   { title: "Notifications", icon: <Bell />, href: "#notifications", tooltip: "Alerts & updates", badge: 3 },
@@ -144,6 +141,36 @@ export function AppSidebar(props: any) {
 
   const filteredMainItems = getFilteredMainItems()
 
+  const isItemActive = (item: Item) => {
+    const href = resolveHref(item)
+
+    // Handle exact matches and path-based matches
+    if (item.title === "Dashboard") {
+      if (isAdminUser && pathname === "/admin") return true
+      if (isStaffUser && pathname === "/staff") return true
+      if (!isAdminUser && !isStaffUser && pathname === "/") return true
+    }
+
+    if (item.title === "Chat" && pathname?.startsWith("/chat")) return true
+    if (item.title === "Notifications" && pathname?.includes("/notifications")) return true
+    if (item.title === "Projects" && pathname?.startsWith("/projects")) return true
+
+    return pathname === href
+  }
+
+  const isStaffItemActive = (item: Item) => {
+    if (item.title === "My Tasks" && pathname === "/staff/tasks") return true
+    if (item.title === "Assigned by Me" && pathname === "/staff/tasks/assigned") return true
+    return false
+  }
+
+  const isAdminItemActive = (item: Item) => {
+    if (item.title === "Admin Dashboard" && pathname === "/admin") return true
+    if (item.title === "Teams & Users" && pathname === "/admin/users") return true
+    if (item.title === "Tasks" && pathname === "/admin/tasks") return true
+    return false
+  }
+
   return (
     <Sidebar
       variant="floating"
@@ -183,9 +210,10 @@ export function AppSidebar(props: any) {
             <SidebarMenu>
               {filteredMainItems.map((item) => {
                 const href = resolveHref(item)
+                const isActive = isItemActive(item)
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.tooltip}>
+                    <SidebarMenuButton asChild isActive={isActive} tooltip={item.tooltip}>
                       <Link href={href} className="text-white dark:text-foreground">
                         {item.icon}
                         <span>{item.title}</span>
@@ -207,26 +235,29 @@ export function AppSidebar(props: any) {
             </SidebarGroupAction>
             <SidebarGroupContent>
               <SidebarMenu>
-                {staffItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild tooltip={item.tooltip}>
-                      <Link
-                        href={
-                          item.title === "My Tasks"
-                            ? "/staff/tasks"
-                            : item.title === "Assigned by Me"
-                              ? "/staff/tasks/assigned"
-                              : "/staff/time"
-                        }
-                        className="text-white dark:text-foreground"
-                      >
-                        {item.icon}
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.badge ? <SidebarMenuBadge>{String(item.badge)}</SidebarMenuBadge> : null}
-                  </SidebarMenuItem>
-                ))}
+                {staffItems.map((item) => {
+                  const isActive = isStaffItemActive(item)
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.tooltip}>
+                        <Link
+                          href={
+                            item.title === "My Tasks"
+                              ? "/staff/tasks"
+                              : item.title === "Assigned by Me"
+                                ? "/staff/tasks/assigned"
+                                : "/staff/time"
+                          }
+                          className="text-white dark:text-foreground"
+                        >
+                          {item.icon}
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.badge ? <SidebarMenuBadge>{String(item.badge)}</SidebarMenuBadge> : null}
+                    </SidebarMenuItem>
+                  )
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -239,25 +270,28 @@ export function AppSidebar(props: any) {
               <SidebarGroupLabel className="text-white dark:text-muted-foreground">Admin</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {adminItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild tooltip={item.tooltip}>
-                        <Link
-                          href={
-                            item.title === "Admin Dashboard"
-                              ? "/admin"
-                              : item.title === "Teams & Users"
-                                ? "/admin/users"
-                                : "/admin/tasks"
-                          }
-                          className="text-white dark:text-foreground"
-                        >
-                          {item.icon}
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  {adminItems.map((item) => {
+                    const isActive = isAdminItemActive(item)
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild isActive={isActive} tooltip={item.tooltip}>
+                          <Link
+                            href={
+                              item.title === "Admin Dashboard"
+                                ? "/admin"
+                                : item.title === "Teams & Users"
+                                  ? "/admin/users"
+                                  : "/admin/tasks"
+                            }
+                            className="text-white dark:text-foreground"
+                          >
+                            {item.icon}
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    )
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
@@ -269,7 +303,7 @@ export function AppSidebar(props: any) {
         <div className="px-2">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild size="sm" tooltip="Settings">
+              <SidebarMenuButton asChild size="sm" tooltip="Settings" isActive={pathname?.includes("/settings")}>
                 <Link
                   href={isAdminUser ? "/admin/settings" : isStaffUser ? "/staff/settings" : "/settings"}
                   className="text-white dark:text-foreground"
