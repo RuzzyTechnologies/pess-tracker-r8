@@ -19,6 +19,7 @@ import {
   Eye,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation"
 
 function Background({ children }: { children: React.ReactNode }) {
   return (
@@ -145,14 +146,24 @@ function SectionHeader({ title }: { title: string }) {
 }
 
 function MainDashboard() {
+  const router = useRouter()
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
       <SectionHeader title="Overview" />
       <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi title="Active Projects" value="8" icon={<Users className="h-4 w-4" />} hint="+2 this month" />
-        <Kpi title="Tasks Due This Week" value="24" icon={<CalendarClock className="h-4 w-4" />} hint="5 today" />
-        <Kpi title="Overdue Tasks" value="5" icon={<Activity className="h-4 w-4" />} hint="-2 vs last week" />
-        <Kpi title="Completion Rate" value="76%" icon={<CheckCircle2 className="h-4 w-4" />} hint="30-day rolling" />
+        <div onClick={() => router.push("/projects")} className="cursor-pointer">
+          <Kpi title="Active Projects" value="8" icon={<Users className="h-4 w-4" />} hint="+2 this month" />
+        </div>
+        <div onClick={() => router.push("/tasks")} className="cursor-pointer">
+          <Kpi title="Tasks Due This Week" value="24" icon={<CalendarClock className="h-4 w-4" />} hint="5 today" />
+        </div>
+        <div onClick={() => router.push("/tasks")} className="cursor-pointer">
+          <Kpi title="Overdue Tasks" value="5" icon={<Activity className="h-4 w-4" />} hint="-2 vs last week" />
+        </div>
+        <div onClick={() => router.push("/tasks")} className="cursor-pointer">
+          <Kpi title="Completion Rate" value="76%" icon={<CheckCircle2 className="h-4 w-4" />} hint="30-day rolling" />
+        </div>
       </div>
 
       <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
@@ -173,7 +184,7 @@ function MainDashboard() {
           </CardContent>
         </SurfaceCard>
 
-        <SurfaceCard>
+        <SurfaceCard className="cursor-pointer hover:shadow-xl transition-shadow" onClick={() => router.push("/tasks")}>
           <CardHeader>
             <CardTitle className="text-foreground">Upcoming Deadlines</CardTitle>
           </CardHeader>
@@ -198,6 +209,8 @@ function MainDashboard() {
 }
 
 function StaffDashboard() {
+  const router = useRouter()
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
       <SectionBanner
@@ -206,20 +219,20 @@ function StaffDashboard() {
         subtitle="Your tasks, time, and personal focus"
       />
       <QuickActionsCard title="Quick actions" subtitle="Stay on track">
-        <Button variant="outline" className="h-8 border-border text-primary hover:bg-muted bg-transparent">
-          <Timer className="mr-2 h-4 w-4" /> Start focus timer
-        </Button>
-        <Button variant="outline" className="h-8 border-border text-primary hover:bg-muted bg-transparent">
+        <Button
+          variant="outline"
+          className="h-8 border-border text-primary hover:bg-muted bg-transparent"
+          onClick={() => router.push("/staff/tasks/new")}
+        >
           <Plus className="mr-2 h-4 w-4" /> New task
-        </Button>
-        <Button className="h-8 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Check className="mr-2 h-4 w-4" /> Log time
         </Button>
       </QuickActionsCard>
 
       <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
-        {/* My Tasks - span 2 columns on sm+ and lg */}
-        <SurfaceCard className="sm:col-span-2 lg:col-span-2">
+        <SurfaceCard
+          className="sm:col-span-2 lg:col-span-2 cursor-pointer hover:shadow-xl transition-shadow"
+          onClick={() => router.push("/staff/tasks")}
+        >
           <CardHeader>
             <CardTitle className="text-foreground">My Tasks</CardTitle>
           </CardHeader>
@@ -251,7 +264,6 @@ function StaffDashboard() {
           </CardContent>
         </SurfaceCard>
 
-        {/* Time Tracker - 1 column */}
         <SurfaceCard>
           <CardHeader>
             <CardTitle className="text-foreground">Time Tracker</CardTitle>
@@ -274,8 +286,10 @@ function StaffDashboard() {
           </CardContent>
         </SurfaceCard>
 
-        {/* My Projects - 1 column */}
-        <SurfaceCard>
+        <SurfaceCard
+          className="cursor-pointer hover:shadow-xl transition-shadow"
+          onClick={() => router.push("/projects")}
+        >
           <CardHeader>
             <CardTitle className="text-foreground">My Projects</CardTitle>
           </CardHeader>
@@ -295,8 +309,10 @@ function StaffDashboard() {
           </CardContent>
         </SurfaceCard>
 
-        {/* Notifications - span 2 columns on sm+ and lg */}
-        <SurfaceCard className="sm:col-span-2 lg:col-span-2">
+        <SurfaceCard
+          className="sm:col-span-2 lg:col-span-2 cursor-pointer hover:shadow-xl transition-shadow"
+          onClick={() => router.push("/staff/notifications")}
+        >
           <CardHeader>
             <CardTitle className="text-foreground">Notifications</CardTitle>
           </CardHeader>
@@ -318,6 +334,8 @@ function StaffDashboard() {
 }
 
 function AdminDashboard() {
+  const router = useRouter()
+
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 p-4 md:p-6">
       <SectionBanner
@@ -326,19 +344,29 @@ function AdminDashboard() {
         subtitle="Organization-wide supervision, roles, and approvals"
       />
       <QuickActionsCard title="Admin actions" subtitle="Manage access and oversight">
-        <Button className="h-8 bg-primary text-primary-foreground hover:bg-primary/90">
+        <Button
+          className="h-8 bg-primary text-primary-foreground hover:bg-primary/90"
+          onClick={() => router.push("/admin/users")}
+        >
           <UserPlus className="mr-2 h-4 w-4" /> Invite user
         </Button>
-        <Button variant="outline" className="h-8 border-border text-primary hover:bg-muted bg-transparent">
+        <Button
+          variant="outline"
+          className="h-8 border-border text-primary hover:bg-muted bg-transparent"
+          onClick={() => router.push("/admin/tasks")}
+        >
           <ShieldCheck className="mr-2 h-4 w-4" /> Review approvals
         </Button>
-        <Button variant="outline" className="h-8 border-border text-primary hover:bg-muted bg-transparent">
+        <Button
+          variant="outline"
+          className="h-8 border-border text-primary hover:bg-muted bg-transparent"
+          onClick={() => router.push("/admin/users")}
+        >
           <Plus className="mr-2 h-4 w-4" /> New role
         </Button>
       </QuickActionsCard>
 
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
-        {/* Approvals Queue */}
         <SurfaceCard>
           <CardHeader>
             <CardTitle className="text-foreground">Approvals Queue</CardTitle>
@@ -350,40 +378,50 @@ function AdminDashboard() {
                 <Button
                   variant="outline"
                   className="h-7 border-border px-2 text-xs text-primary hover:bg-muted bg-transparent"
+                  onClick={() => router.push("/admin/tasks")}
                 >
                   <Eye className="mr-1 h-3.5 w-3.5" /> Review
                 </Button>
-                <Button className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90">
+                <Button
+                  className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90"
+                  onClick={() => router.push("/admin/tasks")}
+                >
                   <Check className="mr-1 h-3.5 w-3.5" /> Approve
                 </Button>
               </div>
             </div>
-            {/* Item 2 */}
             <div className="flex flex-col gap-2 rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="min-w-0 text-foreground">Task "Budget Review"</span>
               <div className="flex shrink-0 items-center gap-2">
                 <Button
                   variant="outline"
                   className="h-7 border-border px-2 text-xs text-primary hover:bg-muted bg-transparent"
+                  onClick={() => router.push("/admin/tasks")}
                 >
                   <Eye className="mr-1 h-3.5 w-3.5" /> Review
                 </Button>
-                <Button className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90">
+                <Button
+                  className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90"
+                  onClick={() => router.push("/admin/tasks")}
+                >
                   <Check className="mr-1 h-3.5 w-3.5" /> Approve
                 </Button>
               </div>
             </div>
-            {/* Item 3 */}
             <div className="flex flex-col gap-2 rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="min-w-0 text-foreground">Task "Privacy Policy"</span>
               <div className="flex shrink-0 items-center gap-2">
                 <Button
                   variant="outline"
                   className="h-7 border-border px-2 text-xs text-primary hover:bg-muted bg-transparent"
+                  onClick={() => router.push("/admin/tasks")}
                 >
                   <Eye className="mr-1 h-3.5 w-3.5" /> Review
                 </Button>
-                <Button className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90">
+                <Button
+                  className="h-7 bg-primary px-2 text-xs text-primary-foreground hover:bg-primary/90"
+                  onClick={() => router.push("/admin/tasks")}
+                >
                   <Check className="mr-1 h-3.5 w-3.5" /> Approve
                 </Button>
               </div>
@@ -391,8 +429,10 @@ function AdminDashboard() {
           </CardContent>
         </SurfaceCard>
 
-        {/* Access Controls */}
-        <SurfaceCard>
+        <SurfaceCard
+          className="cursor-pointer hover:shadow-xl transition-shadow"
+          onClick={() => router.push("/admin/settings")}
+        >
           <CardHeader>
             <CardTitle className="text-foreground">Access Controls</CardTitle>
           </CardHeader>

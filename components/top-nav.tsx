@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 const BellIcon = () => (
@@ -30,6 +31,32 @@ export function TopNav({
   onNewTask?: () => void
 } = {}) {
   const router = useRouter()
+  const pathname = usePathname()
+
+  const handleNewTask = () => {
+    if (onNewTask) {
+      onNewTask()
+      return
+    }
+
+    if (pathname?.startsWith("/admin")) {
+      router.push("/admin/tasks/new")
+    } else if (pathname?.startsWith("/staff")) {
+      router.push("/staff/tasks/new")
+    } else {
+      router.push("/tasks/new")
+    }
+  }
+
+  const handleNotifications = () => {
+    if (pathname?.startsWith("/admin")) {
+      router.push("/admin/notifications")
+    } else if (pathname?.startsWith("/staff")) {
+      router.push("/staff/notifications")
+    } else {
+      router.push("/notifications")
+    }
+  }
 
   return (
     <div className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b border-border bg-background/60 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,12 +64,12 @@ export function TopNav({
         <div className="hidden md:block">
           <Input placeholder="Search projects, tasks..." className="w-[280px]" />
         </div>
-        <Button variant="outline" onClick={onNewTask} className="text-nowrap bg-transparent">
+        <Button variant="outline" onClick={handleNewTask} className="text-nowrap bg-transparent">
           <PlusIcon />
           <span className="ml-2">New Task</span>
         </Button>
         <ThemeToggle />
-        <Button variant="ghost" size="icon" aria-label="Notifications">
+        <Button variant="ghost" size="icon" aria-label="Notifications" onClick={handleNotifications}>
           <BellIcon />
         </Button>
       </div>

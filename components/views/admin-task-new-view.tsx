@@ -22,6 +22,43 @@ export default function AdminTaskNewView() {
   const [due, setDue] = React.useState<string>("")
   const [assignee, setAssignee] = React.useState<string>("unassigned")
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
+  const [error, setError] = React.useState<string>("")
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return
+
+    // Validation
+    if (!title.trim()) {
+      setError("Task title is required")
+      return
+    }
+
+    if (title.trim().length < 3) {
+      setError("Task title must be at least 3 characters long")
+      return
+    }
+
+    setError("")
+    setIsSubmitting(true)
+
+    try {
+      DataAPI.addTask({
+        title: title.trim(),
+        priority,
+        status,
+        projectId,
+        dueDate: due ? new Date(due).toISOString() : undefined,
+        assignee: assignee === "unassigned" ? undefined : assignee,
+        createdById: me?.id,
+      })
+      router.push("/admin/tasks")
+    } catch (err) {
+      setError("Failed to create task. Please try again.")
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-2xl p-4 md:p-6">
       <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
@@ -37,13 +74,14 @@ export default function AdminTaskNewView() {
               onChange={(e) => setTitle(e.target.value)}
               className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10"
               placeholder="Prepare onboarding checklist"
+              disabled={isSubmitting}
             />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Priority</Label>
-              <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
+              <Select value={priority} onValueChange={(v) => setPriority(v as any)} disabled={isSubmitting}>
                 <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
@@ -56,7 +94,7 @@ export default function AdminTaskNewView() {
             </div>
             <div className="space-y-2">
               <Label>Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as any)}>
+              <Select value={status} onValueChange={(v) => setStatus(v as any)} disabled={isSubmitting}>
                 <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -72,7 +110,7 @@ export default function AdminTaskNewView() {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Project</Label>
-              <Select value={projectId} onValueChange={(v) => setProjectId(v)}>
+              <Select value={projectId} onValueChange={(v) => setProjectId(v)} disabled={isSubmitting}>
                 <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
@@ -93,13 +131,14 @@ export default function AdminTaskNewView() {
                 value={due}
                 onChange={(e) => setDue(e.target.value)}
                 className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10"
+                disabled={isSubmitting}
               />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Assign to staff</Label>
-            <Select value={assignee} onValueChange={(v) => setAssignee(v)}>
+            <Select value={assignee} onValueChange={(v) => setAssignee(v)} disabled={isSubmitting}>
               <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                 <SelectValue placeholder="Select staff" />
               </SelectTrigger>
@@ -114,29 +153,25 @@ export default function AdminTaskNewView() {
             </Select>
           </div>
 
+          {error && (
+            <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400">
+              {error}
+            </div>
+          )}
+
           <div className="flex items-center gap-2">
             <Button
               className="bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={() => {
-                if (!title.trim()) return
-                DataAPI.addTask({
-                  title: title.trim(),
-                  priority,
-                  status,
-                  projectId,
-                  dueDate: due ? new Date(due).toISOString() : undefined,
-                  assignee: assignee === "unassigned" ? undefined : assignee,
-                  createdById: me?.id,
-                })
-                router.push("/admin/tasks")
-              }}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
             >
-              Create Task
+              {isSubmitting ? "Creating..." : "Create Task"}
             </Button>
             <Button
               variant="outline"
               className="border-white/20 dark:border-slate-700/30 bg-transparent backdrop-blur-sm"
               onClick={() => router.back()}
+              disabled={isSubmitting}
             >
               Cancel
             </Button>
