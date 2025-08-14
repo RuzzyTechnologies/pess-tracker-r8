@@ -287,29 +287,6 @@ function StaffDashboard() {
         </SurfaceCard>
 
         <SurfaceCard
-          className="cursor-pointer hover:shadow-xl transition-shadow"
-          onClick={() => router.push("/projects")}
-        >
-          <CardHeader>
-            <CardTitle className="text-foreground">My Projects</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
-              <span>Website Revamp</span>
-              <Pill>In Progress</Pill>
-            </div>
-            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
-              <span>Grant 2025</span>
-              <Pill>Planning</Pill>
-            </div>
-            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
-              <span>Mobile MVP</span>
-              <Pill>Review</Pill>
-            </div>
-          </CardContent>
-        </SurfaceCard>
-
-        <SurfaceCard
           className="sm:col-span-2 lg:col-span-2 cursor-pointer hover:shadow-xl transition-shadow"
           onClick={() => router.push("/staff/notifications")}
         >
