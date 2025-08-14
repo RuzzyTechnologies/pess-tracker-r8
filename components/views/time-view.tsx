@@ -16,10 +16,10 @@ export default function TimeView() {
 
   return (
     <div className="mx-auto w-full max-w-3xl p-4 md:p-6 space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Time Tracker</h1>
+      <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Time Tracker</h1>
       <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Log time</CardTitle>
+          <CardTitle className="text-slate-800 dark:text-white">Log time</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -57,15 +57,15 @@ export default function TimeView() {
             Add Entry
           </Button>
 
-          <div className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="text-sm text-slate-600 dark:text-slate-200">
             {"Total today: "}
-            <span className="font-medium text-slate-900 dark:text-slate-100">
+            <span className="font-medium text-slate-900 dark:text-white">
               {Math.round(totalToday / 60)}h {totalToday % 60}m
             </span>
           </div>
 
           <div className="space-y-2">
-            <div className="text-sm font-medium text-slate-800 dark:text-slate-100">Entries</div>
+            <div className="text-sm font-medium text-slate-800 dark:text-white">Entries</div>
             <ul className="space-y-2">
               {entries.map((e) => (
                 <li

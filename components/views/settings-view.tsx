@@ -23,10 +23,10 @@ export default function SettingsView() {
 
   return (
     <div className="mx-auto w-full max-w-3xl p-4 md:p-6 space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Settings</h1>
+      <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Settings</h1>
       <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Profile</CardTitle>
+          <CardTitle className="text-slate-800 dark:text-white">Profile</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">

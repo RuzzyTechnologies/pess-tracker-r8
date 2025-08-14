@@ -32,7 +32,7 @@ export default function NewChatInner() {
     <div className="mx-auto w-full max-w-2xl p-4 md:p-6">
       <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Start a new chat</CardTitle>
+          <CardTitle className="text-foreground">Start a new chat</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <Input
@@ -48,15 +48,15 @@ export default function NewChatInner() {
                 className="flex items-center justify-between rounded-md border border-sky-100/70 bg-white/70 p-2 dark:border-slate-800 dark:bg-slate-900/70"
               >
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{u.name}</div>
-                  <div className="truncate text-xs text-slate-500 dark:text-slate-400">{u.email}</div>
+                  <div className="truncate text-sm font-medium text-foreground">{u.name}</div>
+                  <div className="truncate text-xs text-muted-foreground">{u.email}</div>
                 </div>
                 <Button className="bg-sky-600 text-white hover:bg-sky-700" onClick={() => startChat(u)}>
                   Message
                 </Button>
               </li>
             ))}
-            {list.length === 0 && <li className="p-2 text-sm text-slate-500 dark:text-slate-400">No matches.</li>}
+            {list.length === 0 && <li className="p-2 text-sm text-muted-foreground">No matches.</li>}
           </ul>
         </CardContent>
       </Card>

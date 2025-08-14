@@ -120,7 +120,7 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
                     required
                     className="pl-9 border-sky-100 dark:border-slate-700 focus-visible:ring-sky-400/40"
                   />
-                  <User className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <User className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 </div>
               </div>
             )}
@@ -137,7 +137,7 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
                   autoComplete="email"
                   className="pl-9 border-sky-100 dark:border-slate-700 focus-visible:ring-sky-400/40"
                 />
-                <Mail className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Mail className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               </div>
             </div>
 
@@ -153,10 +153,10 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
                   autoComplete={isSignup ? "new-password" : "current-password"}
                   className="pr-10 pl-9 border-sky-100 dark:border-slate-700 focus-visible:ring-sky-400/40"
                 />
-                <Lock className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Lock className="pointer-events-none absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <button
                   type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   onClick={() => setShowPassword((s) => !s)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >

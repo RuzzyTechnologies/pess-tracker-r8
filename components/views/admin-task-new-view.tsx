@@ -24,9 +24,9 @@ export default function AdminTaskNewView() {
 
   return (
     <div className="mx-auto w-full max-w-2xl p-4 md:p-6">
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">New Task (Admin)</CardTitle>
+          <CardTitle className="text-foreground">New Task (Admin)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -35,7 +35,7 @@ export default function AdminTaskNewView() {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10"
               placeholder="Prepare onboarding checklist"
             />
           </div>
@@ -44,7 +44,7 @@ export default function AdminTaskNewView() {
             <div className="space-y-2">
               <Label>Priority</Label>
               <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
@@ -57,7 +57,7 @@ export default function AdminTaskNewView() {
             <div className="space-y-2">
               <Label>Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as any)}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -73,7 +73,7 @@ export default function AdminTaskNewView() {
             <div className="space-y-2">
               <Label>Project</Label>
               <Select value={projectId} onValueChange={(v) => setProjectId(v)}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
@@ -92,7 +92,7 @@ export default function AdminTaskNewView() {
                 type="date"
                 value={due}
                 onChange={(e) => setDue(e.target.value)}
-                className="border-sky-100 dark:border-slate-700"
+                className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function AdminTaskNewView() {
           <div className="space-y-2">
             <Label>Assign to staff</Label>
             <Select value={assignee} onValueChange={(v) => setAssignee(v)}>
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                 <SelectValue placeholder="Select staff" />
               </SelectTrigger>
               <SelectContent>
@@ -116,7 +116,7 @@ export default function AdminTaskNewView() {
 
           <div className="flex items-center gap-2">
             <Button
-              className="bg-sky-600 text-white hover:bg-sky-700"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
               onClick={() => {
                 if (!title.trim()) return
                 DataAPI.addTask({
@@ -135,7 +135,7 @@ export default function AdminTaskNewView() {
             </Button>
             <Button
               variant="outline"
-              className="border-sky-200 dark:border-slate-700 bg-transparent"
+              className="border-white/20 dark:border-slate-700/30 bg-transparent backdrop-blur-sm"
               onClick={() => router.back()}
             >
               Cancel

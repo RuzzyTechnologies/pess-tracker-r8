@@ -33,11 +33,11 @@ export default function StaffSettingsView() {
 
   return (
     <div className="mx-auto w-full max-w-4xl p-4 md:p-6 space-y-5">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">My Settings</h1>
+      <h1 className="text-xl font-semibold text-foreground">My Settings</h1>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Profile</CardTitle>
+          <CardTitle className="text-foreground">Profile</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -45,7 +45,7 @@ export default function StaffSettingsView() {
             <Input
               id="name"
               defaultValue={me.name}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               onBlur={(e) => updateProfile({ name: e.currentTarget.value.trim() || me.name })}
             />
           </div>
@@ -55,16 +55,16 @@ export default function StaffSettingsView() {
               id="email"
               type="email"
               defaultValue={me.email}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               onBlur={(e) => updateProfile({ email: e.currentTarget.value.trim() || me.email })}
             />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Preferences</CardTitle>
+          <CardTitle className="text-foreground">Preferences</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -73,7 +73,7 @@ export default function StaffSettingsView() {
               value={mySettings.theme}
               onValueChange={(v) => updateSettings({ theme: v as UserSettings["theme"] })}
             >
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-slate-700/30">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -87,7 +87,7 @@ export default function StaffSettingsView() {
             <Label>Timezone</Label>
             <Input
               defaultValue={mySettings.timezone}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               onBlur={(e) => updateSettings({ timezone: e.currentTarget.value.trim() || mySettings.timezone })}
             />
           </div>
@@ -99,7 +99,7 @@ export default function StaffSettingsView() {
               min={30}
               step={15}
               defaultValue={mySettings.dailyTargetMinutes}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               onBlur={(e) => {
                 const n = Math.max(30, Number(e.currentTarget.value || mySettings.dailyTargetMinutes))
                 if (n !== mySettings.dailyTargetMinutes) updateSettings({ dailyTargetMinutes: n })
@@ -112,7 +112,7 @@ export default function StaffSettingsView() {
               value={mySettings.defaults.landingPage}
               onValueChange={(v) => updateSettings({ defaults: { ...mySettings.defaults, landingPage: v as any } })}
             >
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-slate-700/30">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -129,7 +129,7 @@ export default function StaffSettingsView() {
               value={mySettings.defaults.defaultPriority}
               onValueChange={(v) => updateSettings({ defaults: { ...mySettings.defaults, defaultPriority: v as any } })}
             >
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-slate-700/30">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -142,26 +142,26 @@ export default function StaffSettingsView() {
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Notifications</CardTitle>
+          <CardTitle className="text-foreground">Notifications</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>Email notifications</span>
             <Switch
               checked={mySettings.notifications.email}
               onCheckedChange={(v) => updateSettings({ notifications: { ...mySettings.notifications, email: v } })}
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>Push notifications</span>
             <Switch
               checked={mySettings.notifications.push}
               onCheckedChange={(v) => updateSettings({ notifications: { ...mySettings.notifications, push: v } })}
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>When assigned a task</span>
             <Switch
               checked={mySettings.notifications.taskAssigned}
@@ -170,7 +170,7 @@ export default function StaffSettingsView() {
               }
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>When tasks are due soon</span>
             <Switch
               checked={mySettings.notifications.taskDueSoon}
@@ -179,7 +179,7 @@ export default function StaffSettingsView() {
               }
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm sm:col-span-2 dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm sm:col-span-2 dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>Project updates</span>
             <Switch
               checked={mySettings.notifications.projectUpdates}
@@ -191,26 +191,26 @@ export default function StaffSettingsView() {
         </CardContent>
       </Card>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Privacy & Integrations</CardTitle>
+          <CardTitle className="text-foreground">Privacy & Integrations</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>Show my email to team members</span>
             <Switch
               checked={mySettings.privacy.showEmailToMembers}
               onCheckedChange={(v) => updateSettings({ privacy: { ...mySettings.privacy, showEmailToMembers: v } })}
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>Calendar sync</span>
             <Switch
               checked={mySettings.integrations.calendarSync}
               onCheckedChange={(v) => updateSettings({ integrations: { ...mySettings.integrations, calendarSync: v } })}
             />
           </label>
-          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+          <label className="inline-flex items-center justify-between gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
             <span>GitHub integration</span>
             <Switch
               checked={mySettings.integrations.github}
@@ -220,7 +220,7 @@ export default function StaffSettingsView() {
         </CardContent>
       </Card>
 
-      <div className="text-xs text-slate-500 dark:text-slate-400">Changes are saved automatically.</div>
+      <div className="text-xs text-muted-foreground">Changes are saved automatically.</div>
     </div>
   )
 }

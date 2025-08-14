@@ -38,10 +38,11 @@ function SurfaceCard(props: React.ComponentProps<typeof Card>) {
     <Card
       {...props}
       className={[
-        /* Updated to use semantic colors */
-        "backdrop-blur supports-[backdrop-filter]:bg-card/75",
-        "border border-border shadow-sm",
-        "transition-all hover:shadow-md hover:-translate-y-[1px] active:translate-y-0",
+        /* Enhanced glassmorphism effects with more transparency and stronger blur */
+        "backdrop-blur-lg supports-[backdrop-filter]:bg-card/10",
+        "border border-white/20 shadow-lg dark:border-slate-700/30",
+        "transition-all hover:shadow-xl hover:-translate-y-[1px] active:translate-y-0",
+        "hover:bg-card/20 dark:hover:bg-card/15",
         props.className,
       ].join(" ")}
     />
@@ -85,13 +86,13 @@ function Kpi({
     <SurfaceCard>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xs font-medium text-muted-foreground">{title}</CardTitle>
+          <CardTitle className="text-xs font-medium text-muted-foreground dark:text-white">{title}</CardTitle>
           <div className="text-primary">{icon}</div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-semibold tracking-tight text-foreground">{value}</div>
-        {hint ? <div className="mt-1 text-xs text-muted-foreground">{hint}</div> : null}
+        <div className="text-2xl font-semibold tracking-tight text-foreground dark:text-white">{value}</div>
+        {hint ? <div className="mt-1 text-xs text-muted-foreground dark:text-slate-200">{hint}</div> : null}
       </CardContent>
     </SurfaceCard>
   )
@@ -160,13 +161,13 @@ function MainDashboard() {
             <CardTitle className="text-foreground">Activity Feed</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm text-foreground">
               New comment on Task #231
             </div>
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm text-foreground">
               Project "Website Revamp" moved to In Progress
             </div>
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm text-foreground">
               Alice logged 1h on "API Integration"
             </div>
           </CardContent>
@@ -177,15 +178,15 @@ function MainDashboard() {
             <CardTitle className="text-foreground">Upcoming Deadlines</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Milestone: API v1 freeze</span>
               <span className="text-primary">Aug 18</span>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Task: QA Test Plan</span>
               <span className="text-primary">Aug 20</span>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Task: Final Copy Review</span>
               <span className="text-primary">Aug 22</span>
             </div>
@@ -223,7 +224,7 @@ function StaffDashboard() {
             <CardTitle className="text-foreground">My Tasks</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-border bg-card/70 p-3">
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="h-2 w-2 rounded-full bg-primary" aria-hidden="true" />
                 <span className="truncate">Implement "Upload files"</span>
@@ -231,7 +232,7 @@ function StaffDashboard() {
               </div>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">Due Aug 12</span>
             </div>
-            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-border bg-card/70 p-3">
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="h-2 w-2 rounded-full bg-primary/70" aria-hidden="true" />
                 <span className="truncate">Fix timeline labels</span>
@@ -239,7 +240,7 @@ function StaffDashboard() {
               </div>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">Due Aug 13</span>
             </div>
-            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-border bg-card/70 p-3">
+            <div className="flex min-w-0 w-full items-center justify-between rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="h-2 w-2 rounded-full bg-primary/50" aria-hidden="true" />
                 <span className="truncate">Write daily log</span>
@@ -279,15 +280,15 @@ function StaffDashboard() {
             <CardTitle className="text-foreground">My Projects</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Website Revamp</span>
               <Pill>In Progress</Pill>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Grant 2025</span>
               <Pill>Planning</Pill>
             </div>
-            <div className="flex items-center justify-between rounded-md bg-muted/60 p-2">
+            <div className="flex items-center justify-between rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2">
               <span>Mobile MVP</span>
               <Pill>Review</Pill>
             </div>
@@ -300,11 +301,15 @@ function StaffDashboard() {
             <CardTitle className="text-foreground">Notifications</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="rounded-md border border-border bg-card/70 p-3">You were assigned to "API Integration"</div>
-            <div className="rounded-md border border-border bg-card/70 p-3">
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
+              You were assigned to "API Integration"
+            </div>
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
               New comment on "Design QA": please review icons
             </div>
-            <div className="rounded-md border border-border bg-card/70 p-3">Reminder: Daily log due 5:00 PM</div>
+            <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3">
+              Reminder: Daily log due 5:00 PM
+            </div>
           </CardContent>
         </SurfaceCard>
       </div>
@@ -332,65 +337,6 @@ function AdminDashboard() {
         </Button>
       </QuickActionsCard>
 
-      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi title="All Projects" value="23" icon={<Users className="h-4 w-4" />} />
-        <Kpi title="Completed" value="11" icon={<CheckCircle2 className="h-4 w-4" />} />
-        <Kpi title="Members" value="47" icon={<Users className="h-4 w-4" />} />
-        <Kpi title="Pending Approvals" value="3" icon={<Activity className="h-4 w-4" />} />
-      </div>
-
-      <div className="grid min-w-0 gap-4 overflow-x-auto sm:grid-cols-2 lg:grid-cols-3">
-        <SurfaceCard className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-foreground">System Activity</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
-              <div className="flex items-center justify-between">
-                <span>Role update: manager → admin for user jane@acme.org</span>
-                <span className="text-[10px] text-muted-foreground">2m ago</span>
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
-              <div className="flex items-center justify-between">
-                <span>New user invited: tom@ngo.org</span>
-                <span className="text-[10px] text-muted-foreground">9m ago</span>
-              </div>
-            </div>
-            <div className="rounded-md border border-border bg-card/70 p-3 text-sm text-foreground">
-              <div className="flex items-center justify-between">
-                <span>Approval requested for Project "Grant 2025"</span>
-                <span className="text-[10px] text-muted-foreground">15m ago</span>
-              </div>
-            </div>
-          </CardContent>
-        </SurfaceCard>
-
-        <SurfaceCard>
-          <CardHeader>
-            <CardTitle className="text-foreground">Roles & Access</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <div className="flex items-center justify-between">
-              <span>Admins</span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">3</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Managers</span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">8</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Staff</span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">30</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Clients</span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">6</span>
-            </div>
-          </CardContent>
-        </SurfaceCard>
-      </div>
-
       <div className="grid min-w-0 gap-4 sm:grid-cols-2">
         {/* Approvals Queue */}
         <SurfaceCard>
@@ -398,7 +344,7 @@ function AdminDashboard() {
             <CardTitle className="text-foreground">Approvals Queue</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <div className="flex flex-col gap-2 rounded-md bg-muted/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="min-w-0 text-foreground">Project "Grant 2025"</span>
               <div className="flex shrink-0 items-center gap-2">
                 <Button
@@ -413,7 +359,7 @@ function AdminDashboard() {
               </div>
             </div>
             {/* Item 2 */}
-            <div className="flex flex-col gap-2 rounded-md bg-muted/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="min-w-0 text-foreground">Task "Budget Review"</span>
               <div className="flex shrink-0 items-center gap-2">
                 <Button
@@ -428,7 +374,7 @@ function AdminDashboard() {
               </div>
             </div>
             {/* Item 3 */}
-            <div className="flex flex-col gap-2 rounded-md bg-muted/60 p-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-2 rounded-md bg-white/10 backdrop-blur-md border border-white/20 p-2 sm:flex-row sm:items-center sm:justify-between">
               <span className="min-w-0 text-foreground">Task "Privacy Policy"</span>
               <div className="flex shrink-0 items-center gap-2">
                 <Button
@@ -453,19 +399,19 @@ function AdminDashboard() {
           <CardContent className="space-y-4 text-sm">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>Project creation</span>
-              <span className="shrink-0 rounded-full bg-card/70 px-2 py-0.5 text-xs text-foreground ring-1 ring-border">
+              <span className="shrink-0 rounded-full bg-white/10 backdrop-blur-md px-2 py-0.5 text-xs text-foreground ring-1 ring-white/20">
                 Admins, Managers
               </span>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>Approve tasks</span>
-              <span className="shrink-0 rounded-full bg-card/70 px-2 py-0.5 text-xs text-foreground ring-1 ring-border">
+              <span className="shrink-0 rounded-full bg-white/10 backdrop-blur-md px-2 py-0.5 text-xs text-foreground ring-1 ring-white/20">
                 Admins
               </span>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <span>Manage roles</span>
-              <span className="shrink-0 rounded-full bg-card/70 px-2 py-0.5 text-xs text-foreground ring-1 ring-border">
+              <span className="shrink-0 rounded-full bg-white/10 backdrop-blur-md px-2 py-0.5 text-xs text-foreground ring-1 ring-white/20">
                 Admins
               </span>
             </div>

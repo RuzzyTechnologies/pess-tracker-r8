@@ -30,7 +30,7 @@ export default function StaffTasksView() {
   return (
     <div className="mx-auto w-full max-w-7xl p-4 md:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">My Tasks</h1>
+        <h1 className="text-xl font-semibold text-foreground">My Tasks</h1>
         <Button className="bg-sky-600 text-white hover:bg-sky-700" onClick={() => router.push("/staff/tasks/new")}>
           <Plus className="mr-2 h-4 w-4" />
           New Task
@@ -39,11 +39,11 @@ export default function StaffTasksView() {
 
       <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Tasks (assigned to you)</CardTitle>
+          <CardTitle className="text-foreground">Tasks (assigned to you)</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           {myTasks.length === 0 ? (
-            <div className="text-slate-500 dark:text-slate-400">No tasks yet.</div>
+            <div className="text-muted-foreground">No tasks yet.</div>
           ) : (
             myTasks.map((t) => {
               const assigneeEmail = t.assignee ?? "unassigned"
@@ -53,8 +53,8 @@ export default function StaffTasksView() {
                   className="flex flex-col gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70"
                 >
                   <div className="min-w-0">
-                    <div className="truncate font-medium text-slate-900 dark:text-slate-100">{t.title}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="truncate font-medium text-foreground">{t.title}</div>
+                    <div className="text-xs text-muted-foreground">
                       Priority: {t.priority}
                       {t.dueDate ? ` • Due: ${new Date(t.dueDate).toLocaleDateString()}` : ""}
                     </div>

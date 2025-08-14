@@ -62,34 +62,32 @@ export default function AdminUsersView() {
 
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-6 space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Teams & Users</h1>
+      <h1 className="text-xl font-semibold text-foreground">Teams & Users</h1>
 
       {/* Presence overview */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-slate-800 dark:text-slate-100">Active status</CardTitle>
+          <CardTitle className="text-foreground">Active status</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Online now</div>
-            <div className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-              {onlineCount}
-            </div>
+          <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
+            <div className="text-xs text-muted-foreground">Online now</div>
+            <div className="text-2xl font-semibold tracking-tight text-foreground">{onlineCount}</div>
           </div>
-          <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Total accounts</div>
-            <div className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{total}</div>
+          <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-sm dark:border-slate-700/30 dark:bg-slate-900/10">
+            <div className="text-xs text-muted-foreground">Total accounts</div>
+            <div className="text-2xl font-semibold tracking-tight text-foreground">{total}</div>
           </div>
-          <div className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900/70 dark:text-slate-400">
+          <div className="rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 text-xs text-muted-foreground dark:border-slate-700/30 dark:bg-slate-900/10">
             Users are online if active within the last {Math.round(ONLINE_WINDOW_MS / 1000)}s.
           </div>
         </CardContent>
       </Card>
 
       {/* Invite */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Invite user</CardTitle>
+          <CardTitle className="text-foreground">Invite user</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-5">
           <div className="space-y-2 sm:col-span-2">
@@ -97,7 +95,7 @@ export default function AdminUsersView() {
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               placeholder="Jane Smith"
             />
           </div>
@@ -107,14 +105,14 @@ export default function AdminUsersView() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-slate-700/30"
               placeholder="jane@example.com"
             />
           </div>
           <div className="space-y-2 sm:col-span-1">
             <Label>Role</Label>
             <Select value={role} onValueChange={(v) => setRole(v as any)}>
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-slate-700/30">
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
@@ -125,7 +123,7 @@ export default function AdminUsersView() {
             </Select>
           </div>
           <div className="sm:col-span-5">
-            <Button className="bg-sky-600 text-white hover:bg-sky-700" onClick={invite}>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={invite}>
               <UserPlus className="mr-2 h-4 w-4" />
               Invite
             </Button>
@@ -134,9 +132,9 @@ export default function AdminUsersView() {
       </Card>
 
       {/* Members + Presence controls */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-slate-800 dark:text-slate-100">Members</CardTitle>
+          <CardTitle className="text-foreground">Members</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap items-center gap-3">
@@ -144,7 +142,7 @@ export default function AdminUsersView() {
               placeholder="Search members..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              className="h-9 w-[240px] border-sky-100 dark:border-slate-700"
+              className="h-9 w-[240px] border-white/20 dark:border-slate-700/30"
             />
             <label className="inline-flex items-center gap-2 text-sm">
               <Switch checked={onlineOnly} onCheckedChange={setOnlineOnly} />
@@ -157,7 +155,7 @@ export default function AdminUsersView() {
             return (
               <div
                 key={u.id}
-                className="flex flex-col gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70"
+                className="flex flex-col gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700/30 dark:bg-slate-900/10"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
@@ -168,16 +166,16 @@ export default function AdminUsersView() {
                       aria-label={online ? "Online" : "Offline"}
                       title={online ? "Online" : "Offline"}
                     />
-                    <span className="truncate font-medium text-slate-900 dark:text-slate-100">{u.name}</span>
-                    <span className="truncate text-xs text-slate-500 dark:text-slate-400">({u.email})</span>
+                    <span className="truncate font-medium text-foreground">{u.name}</span>
+                    <span className="truncate text-xs text-muted-foreground">({u.email})</span>
                   </div>
-                  <div className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  <div className="mt-1 text-[11px] text-muted-foreground">
                     {online ? "Online" : `Last seen ${timeAgo(u.lastActiveAt)}`}
                   </div>
                 </div>
 
                 <Select value={u.role} onValueChange={(v) => changeRole(u.id, v as User["role"])}>
-                  <SelectTrigger className="h-8 w-[160px] border-sky-200 dark:border-slate-700">
+                  <SelectTrigger className="h-8 w-[160px] border-white/20 dark:border-slate-700/30">
                     <SelectValue placeholder="Role" />
                   </SelectTrigger>
                   <SelectContent>
@@ -189,9 +187,7 @@ export default function AdminUsersView() {
               </div>
             )
           })}
-          {filtered.length === 0 && (
-            <div className="p-2 text-sm text-slate-500 dark:text-slate-400">No members found.</div>
-          )}
+          {filtered.length === 0 && <div className="p-2 text-sm text-muted-foreground">No members found.</div>}
         </CardContent>
       </Card>
     </div>

@@ -277,12 +277,12 @@ export default function StaffAssignedByMeView() {
 
 function Kpi({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-sky-100/70 bg-white/70 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+    <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</div>
+        <div className="text-xs font-medium text-slate-500 dark:text-white">{label}</div>
         {icon}
       </div>
-      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{value}</div>
+      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{value}</div>
     </div>
   )
 }

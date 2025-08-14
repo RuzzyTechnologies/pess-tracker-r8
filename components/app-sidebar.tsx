@@ -155,13 +155,13 @@ export function AppSidebar(props: any) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="group h-8 w-full justify-between px-2 text-sm text-slate-700 hover:bg-sky-50 dark:text-slate-200 dark:hover:bg-slate-800/60"
+                className="group h-8 w-full justify-between px-2 text-sm text-foreground hover:bg-sky-50 dark:hover:bg-slate-800/60"
               >
                 <span className="flex items-center gap-1.5">
                   <Sparkles className="h-4 w-4 text-sky-600" />
                   PESS Tracker
                 </span>
-                <ChevronDown className="h-4 w-4 text-slate-500 transition-transform group-data-[state=open]:rotate-180" />
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-(--radix-popper-anchor-width)">
@@ -181,15 +181,15 @@ export function AppSidebar(props: any) {
         <div className="relative px-2">
           <SidebarInput
             placeholder="Search..."
-            className="pl-8 h-8 bg-white/80 border-sky-100 focus-visible:ring-sky-400/40 dark:bg-slate-900/70 dark:border-slate-800 dark:placeholder:text-slate-500"
+            className="pl-8 h-8 bg-white/80 border-sky-100 focus-visible:ring-sky-400/40 dark:bg-slate-900/70 dark:border-slate-800 dark:placeholder:text-muted-foreground"
           />
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         </div>
       </SidebarHeader>
 
       <SidebarContent className="overflow-y-auto">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {filteredMainItems.map((item) => {
@@ -197,7 +197,7 @@ export function AppSidebar(props: any) {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.tooltip}>
-                      <Link href={href} className="dark:text-slate-200">
+                      <Link href={href} className="text-foreground">
                         {item.icon}
                         <span>{item.title}</span>
                       </Link>
@@ -212,7 +212,7 @@ export function AppSidebar(props: any) {
 
         {!isAdminUser && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">Staff</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-muted-foreground">Staff</SidebarGroupLabel>
             <SidebarGroupAction title="Create task" className="hover:bg-sky-50 hover:text-sky-700">
               <Plus className="h-4 w-4" />
             </SidebarGroupAction>
@@ -229,7 +229,7 @@ export function AppSidebar(props: any) {
                               ? "/staff/tasks/assigned"
                               : "/staff/time"
                         }
-                        className="dark:text-slate-200"
+                        className="text-foreground"
                       >
                         {item.icon}
                         <span>{item.title}</span>
@@ -247,7 +247,7 @@ export function AppSidebar(props: any) {
           <>
             <SidebarSeparator />
             <SidebarGroup>
-              <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">Admin</SidebarGroupLabel>
+              <SidebarGroupLabel className="text-muted-foreground">Admin</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {adminItems.map((item) => (
@@ -261,7 +261,7 @@ export function AppSidebar(props: any) {
                                 ? "/admin/users"
                                 : "/admin/tasks"
                           }
-                          className="dark:text-slate-200"
+                          className="text-foreground"
                         >
                           {item.icon}
                           <span>{item.title}</span>
@@ -283,7 +283,7 @@ export function AppSidebar(props: any) {
               <SidebarMenuButton asChild size="sm" tooltip="Settings">
                 <Link
                   href={isAdminUser ? "/admin/settings" : inStaffArea ? "/staff/settings" : "/settings"}
-                  className="dark:text-slate-200"
+                  className="text-foreground"
                 >
                   <Settings />
                   <span>Settings</span>
@@ -304,8 +304,8 @@ export function AppSidebar(props: any) {
                   <AvatarFallback className="text-[10px]">JD</AvatarFallback>
                 </Avatar>
                 <div className="flex min-w-0 flex-col text-left leading-tight group-data-[collapsible=icon]:hidden">
-                  <span className="truncate text-xs font-medium text-slate-900">Jane Doe</span>
-                  <span className="truncate text-[10px] text-slate-500">jane@acme.org</span>
+                  <span className="truncate text-xs font-medium text-foreground">Jane Doe</span>
+                  <span className="truncate text-[10px] text-muted-foreground">jane@acme.org</span>
                 </div>
               </Button>
             </DropdownMenuTrigger>

@@ -52,7 +52,7 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             onClick={() => setTheme(isDark ? "light" : "dark")}
-            className="text-slate-700 hover:text-sky-700 dark:text-slate-200 dark:hover:text-sky-300"
+            className="text-slate-700 hover:text-sky-700 dark:text-white dark:hover:text-sky-300"
           >
             {isDark ? <SunIcon /> : <MoonIcon />}
           </Button>

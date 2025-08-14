@@ -159,15 +159,15 @@ export default function AdminTasksView() {
       </div>
 
       {/* Filters */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-slate-800 dark:text-slate-100">Filters</CardTitle>
+          <CardTitle className="text-foreground">Filters</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Assignee</div>
+            <div className="text-xs text-muted-foreground">Assignee</div>
             <Select value={assigneeFilter} onValueChange={(v) => setAssigneeFilter(v)}>
-              <SelectTrigger className="h-9 border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="h-9 border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -182,9 +182,9 @@ export default function AdminTasksView() {
             </Select>
           </div>
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Status</div>
+            <div className="text-xs text-muted-foreground">Status</div>
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter((v as Task["status"]) || "all")}>
-              <SelectTrigger className="h-9 border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="h-9 border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -196,9 +196,9 @@ export default function AdminTasksView() {
             </Select>
           </div>
           <div className="space-y-1">
-            <div className="text-xs text-slate-500 dark:text-slate-400">Created by</div>
+            <div className="text-xs text-muted-foreground">Created by</div>
             <Select value={creatorFilter} onValueChange={(v) => setCreatorFilter(v as "all" | "staff")}>
-              <SelectTrigger className="h-9 border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="h-9 border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -211,9 +211,9 @@ export default function AdminTasksView() {
       </Card>
 
       {/* Per-assignee workload */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
-          <CardTitle className="text-slate-800 dark:text-slate-100">Workload by assignee</CardTitle>
+          <CardTitle className="text-foreground">Workload by assignee</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {perAssignee.map((row) => {
@@ -222,19 +222,19 @@ export default function AdminTasksView() {
             return (
               <div
                 key={row.email}
-                className="rounded-md border border-sky-100/70 bg-white/70 p-3 text-sm dark:border-slate-800 dark:bg-slate-900/70"
+                className="rounded-md border border-white/20 bg-white/10 p-3 text-sm backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10"
               >
                 <div className="flex items-center justify-between">
-                  <div className="truncate font-medium text-slate-900 dark:text-slate-100">{row.name}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{pct}% done</div>
+                  <div className="truncate font-medium text-foreground">{row.name}</div>
+                  <div className="text-xs text-muted-foreground">{pct}% done</div>
                 </div>
-                <div className="mt-2 h-2 w-full rounded-full bg-sky-50">
-                  <div className="h-2 rounded-full bg-sky-400/70" style={{ width: `${pct}%` }} />
+                <div className="mt-2 h-2 w-full rounded-full bg-white/20 dark:bg-slate-700/30">
+                  <div className="h-2 rounded-full bg-primary/70" style={{ width: `${pct}%` }} />
                 </div>
-                <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                <div className="mt-2 text-xs text-muted-foreground">
                   Todo {row.todo} • In Progress {row.inProgress} • Done {row.done}
                   {row.overdue > 0 ? (
-                    <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[10px] text-red-700 ring-1 ring-red-100">
+                    <span className="ml-2 rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] text-red-400 ring-1 ring-red-500/30">
                       {row.overdue} overdue
                     </span>
                   ) : null}
@@ -242,20 +242,18 @@ export default function AdminTasksView() {
               </div>
             )
           })}
-          {perAssignee.length === 0 && (
-            <div className="p-3 text-sm text-slate-500 dark:text-slate-400">No staff users found.</div>
-          )}
+          {perAssignee.length === 0 && <div className="p-3 text-sm text-muted-foreground">No staff users found.</div>}
         </CardContent>
       </Card>
 
       {/* All tasks (filtered) with assignment controls */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-slate-100">Tasks</CardTitle>
+          <CardTitle className="text-foreground">Tasks</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
           {items.length === 0 ? (
-            <div className="text-slate-500 dark:text-slate-400">No tasks match your filters.</div>
+            <div className="text-muted-foreground">No tasks match your filters.</div>
           ) : (
             items.map((t) => {
               const creator = t.createdById ? usersById.get(t.createdById) : undefined
@@ -266,11 +264,11 @@ export default function AdminTasksView() {
               return (
                 <div
                   key={t.id}
-                  className="flex flex-col gap-3 rounded-md border border-sky-100/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70"
+                  className="flex flex-col gap-3 rounded-md border border-white/20 bg-white/10 p-3 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between dark:border-slate-700/30 dark:bg-slate-900/10"
                 >
                   <div className="min-w-0">
-                    <div className="truncate font-medium text-slate-900 dark:text-slate-100">{t.title}</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="truncate font-medium text-foreground">{t.title}</div>
+                    <div className="text-xs text-muted-foreground">
                       Priority: {t.priority}
                       {" • "}
                       Status: {t.status}
@@ -278,14 +276,14 @@ export default function AdminTasksView() {
                       Due: {dueText}
                       {creator ? ` • By: ${creator.name}` : ""}
                       {overdueNow ? (
-                        <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-[10px] text-red-700 ring-1 ring-red-100">
+                        <span className="ml-2 rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] text-red-400 ring-1 ring-red-500/30">
                           Overdue
                         </span>
                       ) : null}
                     </div>
-                    <div className="mt-2 h-1.5 w-48 rounded-full bg-sky-50">
+                    <div className="mt-2 h-1.5 w-48 rounded-full bg-white/20 dark:bg-slate-700/30">
                       <div
-                        className="h-1.5 rounded-full bg-sky-400/80"
+                        className="h-1.5 rounded-full bg-primary/80"
                         style={{ width: `${pct}%` }}
                         aria-label={`Progress ${pct}%`}
                       />
@@ -297,7 +295,7 @@ export default function AdminTasksView() {
                       value={assigneeEmail}
                       onValueChange={(v) => setAssignee(t.id, v === "unassigned" ? undefined : v)}
                     >
-                      <SelectTrigger className="h-8 w-[220px] border-sky-200 dark:border-slate-700">
+                      <SelectTrigger className="h-8 w-[220px] border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                         <SelectValue placeholder="Assign to staff" />
                       </SelectTrigger>
                       <SelectContent>
@@ -312,7 +310,7 @@ export default function AdminTasksView() {
 
                     {/* Status */}
                     <Select value={t.status} onValueChange={(v) => setStatus(t.id, v as Task["status"])}>
-                      <SelectTrigger className="h-8 w-[150px] border-sky-200 dark:border-slate-700">
+                      <SelectTrigger className="h-8 w-[150px] border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
                         <SelectValue placeholder="Status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -325,7 +323,7 @@ export default function AdminTasksView() {
                     {/* Delete */}
                     <Button
                       variant="outline"
-                      className="h-8 border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30 bg-transparent"
+                      className="h-8 border-red-500/30 text-red-400 hover:bg-red-500/20 dark:border-red-500/30 dark:text-red-400 dark:hover:bg-red-500/20 bg-transparent backdrop-blur-sm"
                       onClick={() => onDelete(t.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -343,12 +341,12 @@ export default function AdminTasksView() {
 
 function Kpi({ label, value, icon }: { label: string; value: string; icon?: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-sky-100/70 bg-white/70 p-3 shadow-sm backdrop-blur dark:border-slate-800 dark:bg-slate-900/70">
+    <div className="rounded-lg border border-white/20 bg-white/10 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10">
       <div className="flex items-center justify-between">
-        <div className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</div>
+        <div className="text-xs font-medium text-slate-500 dark:text-white">{label}</div>
         {icon}
       </div>
-      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">{value}</div>
+      <div className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">{value}</div>
     </div>
   )
 }
