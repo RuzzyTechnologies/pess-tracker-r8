@@ -147,7 +147,7 @@ export default function StaffAssignedByMeView() {
       </div>
 
       {/* Filters */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader className="pb-2">
           <CardTitle className="text-slate-800 dark:text-slate-100">Filters</CardTitle>
         </CardHeader>
@@ -200,7 +200,7 @@ export default function StaffAssignedByMeView() {
       </Card>
 
       {/* List */}
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
         <CardHeader>
           <CardTitle className="text-slate-800 dark:text-slate-100">Tasks</CardTitle>
         </CardHeader>
@@ -219,7 +219,7 @@ export default function StaffAssignedByMeView() {
               return (
                 <div
                   key={t.id}
-                  className="flex flex-col gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70"
+                  className="flex flex-col gap-2 rounded-md border border-white/20 bg-white/10 p-3 sm:flex-row sm:items-center sm:justify-between backdrop-blur-md dark:border-slate-700/30 dark:bg-slate-900/10"
                 >
                   <div className="min-w-0">
                     <div className="truncate font-medium text-slate-900 dark:text-slate-100">{t.title}</div>

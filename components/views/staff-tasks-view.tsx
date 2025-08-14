@@ -37,7 +37,7 @@ export default function StaffTasksView() {
         </Button>
       </div>
 
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-white/10 backdrop-blur-lg border-white/20 shadow-sm dark:bg-white/10 dark:border-white/20">
         <CardHeader>
           <CardTitle className="text-foreground">Tasks (assigned to you)</CardTitle>
         </CardHeader>
@@ -50,7 +50,7 @@ export default function StaffTasksView() {
               return (
                 <div
                   key={t.id}
-                  className="flex flex-col gap-2 rounded-md border border-sky-100/70 bg-white/70 p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800 dark:bg-slate-900/70"
+                  className="flex flex-col gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 sm:flex-row sm:items-center sm:justify-between dark:border-white/20 dark:bg-white/10"
                 >
                   <div className="min-w-0">
                     <div className="truncate font-medium text-foreground">{t.title}</div>
