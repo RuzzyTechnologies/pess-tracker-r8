@@ -1,5 +1,17 @@
 "use client"
 
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu"
+
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+
+import { DropdownMenuLabel } from "@/components/ui/dropdown-menu"
+
+import { DropdownMenuContent } from "@/components/ui/dropdown-menu"
+
+import { DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+
+import { DropdownMenu } from "@/components/ui/dropdown-menu"
+
 import type { ReactElement } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -15,7 +27,6 @@ import {
   Plus,
   Settings,
   LogOut,
-  ChevronDown,
   Search,
   MessageCircle,
 } from "lucide-react"
@@ -39,14 +50,6 @@ import {
 } from "@/components/ui/sidebar"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 type Item = {
@@ -87,21 +90,59 @@ export function AppSidebar(props: any) {
   const inAdminArea = /^\/admin(\/|$)/.test(pathname ?? "")
   const inStaffArea = /^\/staff(\/|$)/.test(pathname ?? "")
 
-  const isAdminUser = inAdminArea
+  const isAdminUser =
+    inAdminArea ||
+    (/^\/chat(\/|$)/.test(pathname ?? "") &&
+      typeof window !== "undefined" &&
+      (document.referrer.includes("/admin") || sessionStorage.getItem("admin-context") === "true"))
 
-  const dashboardHref = isAdminUser ? "/admin" : inStaffArea ? "/staff" : "/"
+  const isStaffUser =
+    inStaffArea ||
+    (/^\/chat(\/|$)/.test(pathname ?? "") &&
+      typeof window !== "undefined" &&
+      (document.referrer.includes("/staff") || sessionStorage.getItem("staff-context") === "true"))
+
+  if (typeof window !== "undefined") {
+    if (inStaffArea) {
+      sessionStorage.setItem("staff-context", "true")
+      sessionStorage.removeItem("admin-context")
+    } else if (inAdminArea) {
+      sessionStorage.setItem("admin-context", "true")
+      sessionStorage.removeItem("staff-context")
+    }
+  }
+
+  const getDashboardHref = () => {
+    if (isAdminUser) return "/admin"
+    if (isStaffUser) return "/staff"
+    return "/"
+  }
+
   const router = useRouter()
 
-  const filteredMainItems = isAdminUser || inStaffArea ? mainItems.filter((i) => i.title !== "Projects") : mainItems
+  const getFilteredMainItems = () => {
+    if (isAdminUser) {
+      return mainItems.filter((i) => i.title !== "Projects")
+    }
+    if (isStaffUser) {
+      return mainItems.filter((i) => i.title !== "Projects")
+    }
+    return mainItems
+  }
 
   const resolveHref = (item: Item) => {
-    if (item.title === "Dashboard") return dashboardHref
-    if (item.title === "Notifications")
-      return isAdminUser ? "/admin/notifications" : inStaffArea ? "/staff/notifications" : "/notifications"
+    if (item.title === "Dashboard") return getDashboardHref()
+    if (item.title === "Notifications") {
+      if (isAdminUser) return "/admin/notifications"
+      if (isStaffUser) return "/staff/notifications"
+      return "/notifications"
+    }
     if (item.title === "Projects") return "/projects"
     if (item.title === "Chat") return "/chat"
     return item.href
   }
+
+  const filteredMainItems = getFilteredMainItems()
 
   return (
     <Sidebar
@@ -120,32 +161,10 @@ export function AppSidebar(props: any) {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-sky-600 text-white shadow-sm">
             <span className="text-xs font-bold">P</span>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="group h-8 w-full justify-between px-2 text-sm text-white dark:text-foreground hover:bg-sky-50 dark:hover:bg-slate-800/60"
-              >
-                <span className="flex items-center gap-1.5">
-                  <Sparkles className="h-4 w-4 text-sky-600" />
-                  PESS Tracker
-                </span>
-                <ChevronDown className="h-4 w-4 text-white dark:text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-(--radix-popper-anchor-width)">
-              <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
-              <DropdownMenuItem>Acme Inc</DropdownMenuItem>
-              <DropdownMenuItem>NGO Collective</DropdownMenuItem>
-              <DropdownMenuItem>Freelance Hub</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-sky-700">
-                <Plus className="mr-2 h-4 w-4" />
-                New workspace
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1.5 px-2 py-1.5">
+            <Sparkles className="h-4 w-4 text-sky-600" />
+            <span className="text-sm font-medium text-white dark:text-foreground">PESS Tracker</span>
+          </div>
         </div>
 
         <div className="relative px-2">
@@ -180,7 +199,7 @@ export function AppSidebar(props: any) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {!isAdminUser && (
+        {isStaffUser && !isAdminUser && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-white dark:text-muted-foreground">Staff</SidebarGroupLabel>
             <SidebarGroupAction title="Create task" className="hover:bg-sky-50 hover:text-sky-700">
@@ -213,7 +232,7 @@ export function AppSidebar(props: any) {
           </SidebarGroup>
         )}
 
-        {isAdminUser && (
+        {isAdminUser && !isStaffUser && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
@@ -252,7 +271,7 @@ export function AppSidebar(props: any) {
             <SidebarMenuItem>
               <SidebarMenuButton asChild size="sm" tooltip="Settings">
                 <Link
-                  href={isAdminUser ? "/admin/settings" : inStaffArea ? "/staff/settings" : "/settings"}
+                  href={isAdminUser ? "/admin/settings" : isStaffUser ? "/staff/settings" : "/settings"}
                   className="text-white dark:text-foreground"
                 >
                   <Settings />

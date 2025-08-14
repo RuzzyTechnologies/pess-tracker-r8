@@ -41,10 +41,6 @@ export function TopNav({
           <PlusIcon />
           <span className="ml-2">New Task</span>
         </Button>
-        <Button onClick={onNewProject} className="text-nowrap">
-          <PlusIcon />
-          <span className="ml-2">New Project</span>
-        </Button>
         <ThemeToggle />
         <Button variant="ghost" size="icon" aria-label="Notifications">
           <BellIcon />
