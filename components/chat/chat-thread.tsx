@@ -5,8 +5,19 @@ import { useData, DataAPI, getCurrentUser, listenTyping, setTyping, type User } 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { ArrowLeft, Send } from "lucide-react"
 import { useRouter } from "next/navigation"
+
+const ArrowLeft = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 12H5m7-7l-7 7 7 7-7-7 7-7" />
+  </svg>
+)
+
+const Send = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+  </svg>
+)
 
 export function ChatThread({ threadId }: { threadId: string }) {
   const [state, update] = useData((d) => ({

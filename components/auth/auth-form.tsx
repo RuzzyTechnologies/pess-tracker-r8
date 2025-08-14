@@ -3,7 +3,70 @@
 import * as React from "react"
 import { useActionState } from "react"
 import Link from "next/link"
-import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react"
+const Eye = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+    />
+  </svg>
+)
+
+const EyeOff = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+    />
+  </svg>
+)
+
+const Loader2 = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"
+    />
+  </svg>
+)
+
+const Lock = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" strokeWidth={2} />
+    <circle cx="12" cy="16" r="1" strokeWidth={2} />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11V7a5 5 0 0110 0v4" />
+  </svg>
+)
+
+const Mail = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+    />
+  </svg>
+)
+
+const User = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+    />
+  </svg>
+)
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -35,12 +98,12 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
 
   return (
     <div>
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 dark:supports-[backdrop-filter]:bg-slate-900/75 w-full max-w-md border border-sky-100/70 dark:border-slate-800 shadow-sm">
+      <Card className="backdrop-blur supports-[backdrop-filter]:bg-card/75 w-full max-w-md border border-border shadow-sm">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          <CardTitle className="text-lg font-semibold text-foreground">
             {isSignup ? "Create your account" : "Welcome back"}
           </CardTitle>
-          <CardDescription className="text-slate-500 dark:text-slate-400">
+          <CardDescription className="text-muted-foreground">
             {isSignup ? "Sign up to start tracking your projects and tasks." : "Log in to continue to PESS Tracker."}
           </CardDescription>
         </CardHeader>
@@ -105,7 +168,7 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
             {state?.error && (
               <div
                 role="alert"
-                className="rounded-md border border-red-200 dark:border-red-800 bg-red-50/70 dark:bg-red-950/70 px-3 py-2 text-sm text-red-700 dark:text-red-400"
+                className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
               >
                 {state.error}
               </div>
@@ -113,7 +176,7 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
 
             <Button
               type="submit"
-              className="w-full bg-sky-600 text-white hover:bg-sky-700 transition-transform active:scale-[0.98]"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-transform active:scale-[0.98]"
               disabled={isPending}
             >
               {isPending ? (
@@ -128,24 +191,18 @@ export function AuthForm({ variant = "login", onLogin, onSignup }: AuthFormProps
               )}
             </Button>
 
-            <div className="text-center text-sm text-slate-600 dark:text-slate-400">
+            <div className="text-center text-sm text-muted-foreground">
               {isSignup ? (
                 <>
                   Already have an account?{" "}
-                  <Link
-                    className="font-medium text-sky-700 dark:text-sky-400 underline-offset-4 hover:underline"
-                    href="/login"
-                  >
+                  <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/login">
                     Sign in
                   </Link>
                 </>
               ) : (
                 <>
                   New here?{" "}
-                  <Link
-                    className="font-medium text-sky-700 dark:text-sky-400 underline-offset-4 hover:underline"
-                    href="/signup"
-                  >
+                  <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/signup">
                     Create an account
                   </Link>
                 </>

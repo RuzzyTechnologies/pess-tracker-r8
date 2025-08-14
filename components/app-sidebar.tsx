@@ -1,8 +1,11 @@
 "use client"
 
-import type * as React from "react"
+import React from "react"
+
+import type { ReactElement } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import {
   LayoutGrid,
   KanbanSquare,
@@ -13,16 +16,12 @@ import {
   Users,
   Sparkles,
   Plus,
-  MoreHorizontal,
   Settings,
   LogOut,
   ChevronDown,
   Search,
-  FolderKanban,
-  BadgeCheck,
   MessageCircle,
 } from "lucide-react"
-import { usePathname } from "next/navigation"
 
 import {
   Sidebar,
@@ -35,7 +34,6 @@ import {
   SidebarHeader,
   SidebarInput,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -57,29 +55,29 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 type Item = {
   title: string
   href: string
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  icon: ReactElement
   badge?: string | number
   tooltip?: string
   isActive?: boolean
 }
 
 const mainItems: Item[] = [
-  { title: "Dashboard", icon: LayoutGrid, href: "#", tooltip: "Overview", isActive: true },
-  { title: "Projects", icon: KanbanSquare, href: "#projects", tooltip: "All projects", badge: 8 },
-  { title: "Chat", icon: MessageCircle, href: "#chat", tooltip: "Direct messages" },
-  { title: "Notifications", icon: Bell, href: "#notifications", tooltip: "Alerts & updates", badge: 3 },
+  { title: "Dashboard", icon: <LayoutGrid />, href: "#", tooltip: "Overview", isActive: true },
+  { title: "Projects", icon: <KanbanSquare />, href: "#projects", tooltip: "All projects", badge: 8 },
+  { title: "Chat", icon: <MessageCircle />, href: "#chat", tooltip: "Direct messages" },
+  { title: "Notifications", icon: <Bell />, href: "#notifications", tooltip: "Alerts & updates", badge: 3 },
 ]
 
 const staffItems: Item[] = [
-  { title: "My Tasks", icon: Layers, href: "#staff-tasks", tooltip: "Assigned tasks", badge: 12 },
-  { title: "Assigned by Me", icon: Users, href: "#staff-assigned", tooltip: "Tasks you assigned" },
-  { title: "Time Tracker", icon: Timer, href: "#staff-time", tooltip: "Track your time" },
+  { title: "My Tasks", icon: <Layers />, href: "#staff-tasks", tooltip: "Assigned tasks", badge: 12 },
+  { title: "Assigned by Me", icon: <Users />, href: "#staff-assigned", tooltip: "Tasks you assigned" },
+  { title: "Time Tracker", icon: <Timer />, href: "#staff-time", tooltip: "Track your time" },
 ]
 
 const adminItems: Item[] = [
-  { title: "Admin Dashboard", icon: ShieldCheck, href: "#admin", tooltip: "Admin overview" },
-  { title: "Teams & Users", icon: Users, href: "#admin-users", tooltip: "Manage teams" },
-  { title: "Tasks", icon: Layers, href: "#admin-tasks", tooltip: "Assign and manage tasks" },
+  { title: "Admin Dashboard", icon: <ShieldCheck />, href: "#admin", tooltip: "Admin overview" },
+  { title: "Teams & Users", icon: <Users />, href: "#admin-users", tooltip: "Manage teams" },
+  { title: "Tasks", icon: <Layers />, href: "#admin-tasks", tooltip: "Assign and manage tasks" },
 ]
 
 const sampleProjects = [
@@ -88,19 +86,48 @@ const sampleProjects = [
   { name: "Mobile MVP", href: "#projects", status: "Review" },
 ]
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: any) {
   const pathname = usePathname()
   const inAdminArea = /^\/admin(\/|$)/.test(pathname ?? "")
-  const inStaffArea = /^\/staff(\/|$)/.test(pathname ?? "") || /^\/chat(\/|$)/.test(pathname ?? "")
-  const dashboardHref = inAdminArea ? "/admin" : inStaffArea ? "/staff" : "/"
+  const inStaffArea = /^\/staff(\/|$)/.test(pathname ?? "")
+
+  const isAdminUser = React.useMemo(() => {
+    // Check if currently in admin area
+    if (inAdminArea) return true
+
+    // Check if user has admin access by looking at browser history or referrer
+    if (typeof window !== "undefined") {
+      // Check if user came from admin area
+      if (document.referrer.includes("/admin")) return true
+
+      // Check localStorage for admin session indicator
+      const adminSession = localStorage.getItem("pess-admin-access")
+      if (adminSession === "true") return true
+
+      // Check if current session has accessed admin pages
+      const hasAdminAccess = sessionStorage.getItem("admin-access")
+      if (hasAdminAccess === "true") return true
+    }
+
+    return false
+  }, [inAdminArea, pathname])
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && inAdminArea) {
+      localStorage.setItem("pess-admin-access", "true")
+      sessionStorage.setItem("admin-access", "true")
+    }
+  }, [inAdminArea])
+
+  const dashboardHref = isAdminUser ? "/admin" : inStaffArea ? "/staff" : "/"
   const router = useRouter()
 
-  const filteredMainItems = inAdminArea || inStaffArea ? mainItems.filter((i) => i.title !== "Projects") : mainItems
+  const filteredMainItems = isAdminUser || inStaffArea ? mainItems.filter((i) => i.title !== "Projects") : mainItems
 
   const resolveHref = (item: Item) => {
     if (item.title === "Dashboard") return dashboardHref
     if (item.title === "Notifications")
-      return inAdminArea ? "/admin/notifications" : inStaffArea ? "/staff/notifications" : "/notifications"
+      return isAdminUser ? "/admin/notifications" : inStaffArea ? "/staff/notifications" : "/notifications"
     if (item.title === "Projects") return "/projects"
     if (item.title === "Chat") return "/chat"
     return item.href
@@ -171,7 +198,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive} tooltip={item.tooltip}>
                       <Link href={href} className="dark:text-slate-200">
-                        <item.icon className="text-sky-600" />
+                        {item.icon}
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -183,7 +210,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {!inAdminArea && (
+        {!isAdminUser && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">Staff</SidebarGroupLabel>
             <SidebarGroupAction title="Create task" className="hover:bg-sky-50 hover:text-sky-700">
@@ -204,7 +231,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                         }
                         className="dark:text-slate-200"
                       >
-                        <item.icon className="text-sky-600" />
+                        {item.icon}
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -216,7 +243,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         )}
 
-        {!inStaffArea && (
+        {isAdminUser && (
           <>
             <SidebarSeparator />
             <SidebarGroup>
@@ -236,7 +263,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                           }
                           className="dark:text-slate-200"
                         >
-                          <item.icon className="text-sky-600" />
+                          {item.icon}
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
@@ -247,38 +274,6 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             </SidebarGroup>
           </>
         )}
-
-        {!inAdminArea && !inStaffArea && (
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-slate-500 dark:text-slate-400">Projects</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {sampleProjects.map((p) => (
-                  <SidebarMenuItem key={p.name}>
-                    <SidebarMenuButton asChild size="sm" tooltip={p.name}>
-                      <Link href="/projects" className="dark:text-slate-200">
-                        <FolderKanban className="text-sky-600" />
-                        <span>{p.name}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    <SidebarMenuAction title="More">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </SidebarMenuAction>
-                  </SidebarMenuItem>
-                ))}
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild size="sm" isActive tooltip="Recently updated">
-                    <Link href="/projects" className="dark:text-slate-200">
-                      <BadgeCheck className="text-sky-600" />
-                      <span>Compliance Update</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge className="bg-sky-100 text-sky-700">New</SidebarMenuBadge>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
       </SidebarContent>
 
       <SidebarFooter className="gap-1">
@@ -287,7 +282,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuItem>
               <SidebarMenuButton asChild size="sm" tooltip="Settings">
                 <Link
-                  href={inAdminArea ? "/admin/settings" : inStaffArea ? "/staff/settings" : "/settings"}
+                  href={isAdminUser ? "/admin/settings" : inStaffArea ? "/staff/settings" : "/settings"}
                   className="dark:text-slate-200"
                 >
                   <Settings />
