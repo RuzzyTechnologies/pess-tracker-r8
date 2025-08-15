@@ -12,21 +12,23 @@ export default function ChatLayout({ threadId }: { threadId?: string }) {
   React.useEffect(() => setActive(threadId), [threadId])
 
   return (
-    <div className="mx-auto h-[calc(100svh-8rem)] w-full max-w-7xl p-6">
-      <div className="grid h-full grid-cols-[380px_1fr] overflow-hidden rounded-xl border border-border bg-card shadow-lg">
-        <div className="border-r border-border bg-muted">
-          <div className="border-b border-border p-4">
+    <div className="mx-auto h-[calc(100svh-8rem)] w-full max-w-7xl p-6 min-h-0">
+      <div className="grid h-full grid-cols-1 md:grid-cols-[380px_1fr] overflow-hidden rounded-xl border border-border bg-card shadow-lg min-h-0">
+        <div className="border-r border-border bg-muted flex flex-col min-h-0 max-h-full">
+          <div className="border-b border-border p-4 flex-shrink-0">
             <h1 className="text-lg font-semibold text-foreground">Messages</h1>
           </div>
-          <ChatList
-            selectedId={active}
-            onSelect={(id) => {
-              setActive(id)
-              router.push(`/chat/${id}`)
-            }}
-          />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <ChatList
+              selectedId={active}
+              onSelect={(id) => {
+                setActive(id)
+                router.push(`/chat/${id}`)
+              }}
+            />
+          </div>
         </div>
-        <div className="bg-card">
+        <div className="bg-card flex flex-col min-h-0 max-h-full">
           {active ? (
             <ChatThread threadId={active} />
           ) : (

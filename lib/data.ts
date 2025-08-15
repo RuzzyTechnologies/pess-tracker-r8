@@ -73,6 +73,8 @@ export type UserSettings = {
 export type ChatThread = {
   id: string
   participantIds: string[]
+  name?: string // Added optional name field for group and department chats
+  chatType?: "individual" | "group" | "department" // Added chat type field
   createdAt: string
   lastMessageAt: string
 }
@@ -470,22 +472,61 @@ export const DataAPI = {
 
   // Chat
   chat: {
-    ensureThread(participantIds: string[]) {
+    ensureThread(participantIds: string[], name?: string, chatType?: "individual" | "group" | "department") {
       const d = load()
       const set = new Set(participantIds)
-      const existing = d.chats.find(
-        (t) => t.participantIds.length === set.size && t.participantIds.every((p) => set.has(p)),
-      )
-      if (existing) return existing
+
+      if (!name && (!chatType || chatType === "individual")) {
+        const existing = d.chats.find(
+          (t) => t.participantIds.length === set.size && t.participantIds.every((p) => set.has(p)) && !t.name,
+        )
+        if (existing) return existing
+      }
+
       const t: ChatThread = {
         id: id(),
         participantIds: [...set],
+        name: name?.trim() || undefined,
+        chatType: chatType || (set.size > 2 ? "group" : "individual"),
         createdAt: new Date().toISOString(),
         lastMessageAt: new Date().toISOString(),
       }
       save({ ...d, chats: [t, ...d.chats] })
       return t
     },
+
+    updateThread(threadId: string, updates: { name?: string; chatType?: "individual" | "group" | "department" }) {
+      const d = load()
+      save({
+        ...d,
+        chats: d.chats.map((c) => (c.id === threadId ? { ...c, ...updates, name: updates.name?.trim() || c.name } : c)),
+      })
+    },
+
+    addParticipants(threadId: string, newParticipantIds: string[]) {
+      const d = load()
+      const thread = d.chats.find((c) => c.id === threadId)
+      if (!thread) return
+
+      const updatedParticipants = [...new Set([...thread.participantIds, ...newParticipantIds])]
+      save({
+        ...d,
+        chats: d.chats.map((c) => (c.id === threadId ? { ...c, participantIds: updatedParticipants } : c)),
+      })
+    },
+
+    removeParticipant(threadId: string, participantId: string) {
+      const d = load()
+      const thread = d.chats.find((c) => c.id === threadId)
+      if (!thread || thread.participantIds.length <= 2) return // Don't allow removing from individual chats or if only 2 people left
+
+      const updatedParticipants = thread.participantIds.filter((id) => id !== participantId)
+      save({
+        ...d,
+        chats: d.chats.map((c) => (c.id === threadId ? { ...c, participantIds: updatedParticipants } : c)),
+      })
+    },
+
     sendMessage(threadId: string, senderId: string, text: string) {
       const trimmed = text.trim()
       if (!trimmed) return
