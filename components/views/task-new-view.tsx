@@ -61,9 +61,9 @@ export default function TaskNewView() {
 
   return (
     <div className="mx-auto w-full max-w-2xl p-4 md:p-6">
-      <Card className="backdrop-blur supports-[backdrop-filter]:bg-white/75 border border-sky-100/70 shadow-sm dark:supports-[backdrop-filter]:bg-slate-900/70 dark:border-slate-800">
+      <Card className="bg-white/10 backdrop-blur-lg border-white/20 shadow-sm dark:bg-white/10 dark:border-white/20">
         <CardHeader>
-          <CardTitle className="text-slate-800 dark:text-white">New Task</CardTitle>
+          <CardTitle className="text-foreground">New Task</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -72,7 +72,7 @@ export default function TaskNewView() {
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="border-sky-100 dark:border-slate-700"
+              className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md"
               placeholder="Implement Upload Files"
               disabled={isSubmitting}
             />
@@ -81,7 +81,7 @@ export default function TaskNewView() {
             <div className="space-y-2">
               <Label>Priority</Label>
               <Select value={priority} onValueChange={(v) => setPriority(v as any)} disabled={isSubmitting}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md">
                   <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
@@ -94,7 +94,7 @@ export default function TaskNewView() {
             <div className="space-y-2">
               <Label>Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as any)} disabled={isSubmitting}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -109,7 +109,7 @@ export default function TaskNewView() {
             <div className="space-y-2">
               <Label>Project</Label>
               <Select value={projectId} onValueChange={(v) => setProjectId(v)} disabled={isSubmitting}>
-                <SelectTrigger className="border-sky-100 dark:border-slate-700">
+                <SelectTrigger className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md">
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
                 <SelectContent>
@@ -128,7 +128,7 @@ export default function TaskNewView() {
                 type="date"
                 value={due}
                 onChange={(e) => setDue(e.target.value)}
-                className="border-sky-100 dark:border-slate-700"
+                className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md"
                 disabled={isSubmitting}
               />
             </div>
@@ -136,7 +136,7 @@ export default function TaskNewView() {
           <div className="space-y-2">
             <Label>Assign to staff</Label>
             <Select value={assignee} onValueChange={(v) => setAssignee(v)} disabled={isSubmitting}>
-              <SelectTrigger className="border-sky-100 dark:border-slate-700">
+              <SelectTrigger className="border-white/20 dark:border-white/20 bg-white/10 backdrop-blur-md">
                 <SelectValue placeholder="Select staff" />
               </SelectTrigger>
               <SelectContent>
@@ -162,7 +162,7 @@ export default function TaskNewView() {
             </Button>
             <Button
               variant="outline"
-              className="border-sky-200 dark:border-slate-700 bg-transparent"
+              className="border-white/20 dark:border-white/20 bg-transparent"
               onClick={() => router.back()}
               disabled={isSubmitting}
             >
