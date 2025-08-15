@@ -347,7 +347,7 @@ export function ChatThread({ threadId }: { threadId: string }) {
 
               return (
                 <div key={m.id} className={["flex w-full", mine ? "justify-end" : "justify-start"].join(" ")}>
-                  <div className="flex items-start gap-2 max-w-[85%]">
+                  <div className="group flex items-start gap-2 max-w-[85%]">
                     <div
                       className={[
                         "rounded-2xl px-3 py-2 text-sm shadow",
@@ -373,6 +373,39 @@ export function ChatThread({ threadId }: { threadId: string }) {
                     </div>
                     {isAdmin && (
                       <div className="flex flex-col gap-1 mt-1">
+                        {deleteConfirm === m.id ? (
+                          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-md p-2 w-32">
+                            <div className="text-xs text-foreground mb-2">Delete message?</div>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => deleteMessage(m.id)}
+                                className="h-6 w-6 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                              >
+                                ✓
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setDeleteConfirm(null)}
+                                className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                              >
+                                ✕
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setDeleteConfirm(m.id)}
+                            className="h-6 w-6 text-muted-foreground hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Delete message"
+                          >
+                            <TrashIcon className="h-3 w-3" />
+                          </Button>
+                        )}
                         {showModerationDialog === m.id ? (
                           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-md p-2 w-48">
                             <div className="text-xs text-foreground mb-2 flex items-center gap-1">
