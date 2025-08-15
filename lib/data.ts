@@ -426,6 +426,25 @@ export const DataAPI = {
       users: d.users.map((u) => (u.email.toLowerCase() === email.toLowerCase() ? { ...u, ...patch } : u)),
     })
   },
+  deleteUser(userId: string) {
+    const d = load()
+    save({
+      ...d,
+      users: d.users.filter((u) => u.id !== userId),
+      userSettings: Object.fromEntries(Object.entries(d.userSettings).filter(([id]) => id !== userId)),
+      // Remove user from chat threads
+      chats: d.chats
+        .map((c) => ({
+          ...c,
+          participantIds: c.participantIds.filter((id) => id !== userId),
+        }))
+        .filter((c) => c.participantIds.length > 0), // Remove empty chats
+      // Remove messages from deleted user
+      chatMessages: d.chatMessages.filter((m) => m.senderId !== userId),
+      // Remove tasks assigned to deleted user
+      tasks: d.tasks.map((t) => (t.assigneeId === userId ? { ...t, assigneeId: undefined, assignee: undefined } : t)),
+    })
+  },
 
   // Org/Settings
   updateOrg(patch: Partial<OrgSettings>) {
@@ -552,6 +571,21 @@ export const DataAPI = {
         m.threadId === threadId && !m.readBy.includes(userId) ? { ...m, readBy: [...m.readBy, userId] } : m,
       )
       save({ ...d, chatMessages: msgs })
+    },
+    deleteMessage(messageId: string) {
+      const d = load()
+      save({
+        ...d,
+        chatMessages: d.chatMessages.filter((m) => m.id !== messageId),
+      })
+    },
+    deleteThread(threadId: string) {
+      const d = load()
+      save({
+        ...d,
+        chats: d.chats.filter((c) => c.id !== threadId),
+        chatMessages: d.chatMessages.filter((m) => m.threadId !== threadId),
+      })
     },
   },
 }

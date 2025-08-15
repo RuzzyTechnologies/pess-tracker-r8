@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useData, DataAPI, isOnline, ONLINE_WINDOW_MS, type User } from "@/lib/data"
+import { useData, DataAPI, isOnline, ONLINE_WINDOW_MS, type User, getCurrentUser } from "@/lib/data"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,6 +9,17 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { UserPlus } from "lucide-react"
+
+const TrashIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
+  </svg>
+)
 
 function timeAgo(iso?: string): string {
   if (!iso) return "never"
@@ -29,12 +40,15 @@ export default function AdminUsersView() {
   const [role, setRole] = React.useState<User["role"]>("staff")
   const [onlineOnly, setOnlineOnly] = React.useState(false)
   const [q, setQ] = React.useState("")
+  const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null)
   // Local tick to update "Online"/"Last seen" without data writes (e.g., user goes offline)
   const [, force] = React.useReducer((x) => x + 1, 0)
   React.useEffect(() => {
     const t = setInterval(force, 5_000)
     return () => clearInterval(t)
   }, [])
+
+  const me = getCurrentUser()!
 
   const invite = () => {
     if (!email.trim()) return
@@ -45,6 +59,23 @@ export default function AdminUsersView() {
 
   const changeRole = (id: string, role: User["role"]) =>
     update((d) => ({ ...d, users: d.users.map((u) => (u.id === id ? { ...u, role } : u)) }))
+
+  const deleteUser = (userId: string, userName: string) => {
+    if (userId === me.id) {
+      alert("You cannot delete your own account.")
+      return
+    }
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${userName}? This will remove their account and all associated data. This action cannot be undone.`,
+      )
+    ) {
+      DataAPI.deleteUser(userId)
+      setDeleteConfirm(null)
+      update((d) => ({ ...d, users: d.users.filter((u) => u.id !== userId) }))
+    }
+  }
 
   const onlineCount = state.users.filter((u) => isOnline(u)).length
   const total = state.users.length
@@ -152,12 +183,13 @@ export default function AdminUsersView() {
 
           {filtered.map((u) => {
             const online = isOnline(u)
+            const isCurrentUser = u.id === me.id
             return (
               <div
                 key={u.id}
                 className="flex flex-col gap-2 rounded-md border border-white/20 bg-white/10 backdrop-blur-md p-3 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700/30 dark:bg-slate-900/10"
               >
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span
                       className={["inline-block h-2 w-2 rounded-full", online ? "bg-emerald-500" : "bg-slate-400"].join(
@@ -166,7 +198,9 @@ export default function AdminUsersView() {
                       aria-label={online ? "Online" : "Offline"}
                       title={online ? "Online" : "Offline"}
                     />
-                    <span className="truncate font-medium text-foreground">{u.name}</span>
+                    <span className="truncate font-medium text-foreground">
+                      {u.name} {isCurrentUser && "(You)"}
+                    </span>
                     <span className="truncate text-xs text-muted-foreground">({u.email})</span>
                   </div>
                   <div className="mt-1 text-[11px] text-muted-foreground">
@@ -174,16 +208,30 @@ export default function AdminUsersView() {
                   </div>
                 </div>
 
-                <Select value={u.role} onValueChange={(v) => changeRole(u.id, v as User["role"])}>
-                  <SelectTrigger className="h-8 w-[160px] border-white/20 dark:border-slate-700/30">
-                    <SelectValue placeholder="Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="staff">Staff</SelectItem>
-                    <SelectItem value="manager">Manager</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Select value={u.role} onValueChange={(v) => changeRole(u.id, v as User["role"])}>
+                    <SelectTrigger className="h-8 w-[160px] border-white/20 dark:border-slate-700/30">
+                      <SelectValue placeholder="Role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="staff">Staff</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {!isCurrentUser && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => deleteUser(u.id, u.name)}
+                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                      title={`Delete ${u.name}`}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
               </div>
             )
           })}

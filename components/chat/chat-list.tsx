@@ -1,11 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { useData, getCurrentUser, type ChatThread, type ChatMessage, type User } from "@/lib/data"
+import { useData, getCurrentUser, DataAPI, type ChatThread, type ChatMessage, type User } from "@/lib/data"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { isAdminEmail } from "@/lib/auth"
 
 const PlusIcon = () => (
   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,6 +47,17 @@ const BuildingIcon = () => (
   </svg>
 )
 
+const TrashIcon = () => (
+  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+    />
+  </svg>
+)
+
 type ThreadWithMeta = ChatThread & {
   otherUsers: User[]
   last?: ChatMessage
@@ -64,11 +76,25 @@ export function ChatList({
   selectedId?: string
   showNew?: boolean
 }) {
-  const [state] = useData((d) => ({ chats: d.chats, messages: d.chatMessages, users: d.users }))
+  const [state, update] = useData((d) => ({ chats: d.chats, messages: d.chatMessages, users: d.users }))
   const me = getCurrentUser()
   const [q, setQ] = React.useState("")
   const [filter, setFilter] = React.useState<"all" | "individual" | "group" | "department">("all")
   const router = useRouter()
+
+  const isAdmin = me ? isAdminEmail(me.email) : false
+
+  const deleteChat = (e: React.MouseEvent, threadId: string, chatName: string, chatType: string) => {
+    e.stopPropagation()
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${chatName}"? This will permanently remove the ${chatType} and all its messages. This action cannot be undone.`,
+      )
+    ) {
+      DataAPI.chat.deleteThread(threadId)
+      update((d) => ({ ...d, chats: d.chats.filter((c) => c.id !== threadId) }))
+    }
+  }
 
   const threads: ThreadWithMeta[] = React.useMemo(() => {
     if (!me) return []
@@ -216,49 +242,65 @@ export function ChatList({
                 })
                 const active = selectedId === t.id
                 return (
-                  <button
+                  <div
                     key={t.id}
-                    className={`w-full rounded-lg p-3 text-left transition-colors bg-white/10 backdrop-blur-md border border-white/20 ${
+                    className={`group relative w-full rounded-lg p-3 transition-colors bg-white/10 backdrop-blur-md border border-white/20 ${
                       active ? "bg-accent border-primary/50" : "hover:bg-white/20"
                     }`}
-                    onClick={() => (onSelect ? onSelect(t.id) : router.push(`/chat/${t.id}`))}
                   >
-                    <div className="flex items-start gap-3">
-                      <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
-                          t.chatType === "department"
-                            ? "bg-orange-500"
-                            : t.chatType === "group"
-                              ? "bg-green-500"
-                              : "bg-primary"
-                        } text-white`}
-                      >
-                        {getChatIcon(t)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="truncate font-medium text-foreground">{name}</span>
-                            {t.chatType !== "individual" && (
-                              <span className="shrink-0 text-xs text-muted-foreground bg-white/20 px-1.5 py-0.5 rounded">
-                                {t.participantCount}
-                              </span>
-                            )}
-                          </div>
-                          <span className="shrink-0 text-xs text-muted-foreground">{time}</span>
+                    <button
+                      className="w-full text-left"
+                      onClick={() => (onSelect ? onSelect(t.id) : router.push(`/chat/${t.id}`))}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div
+                          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${
+                            t.chatType === "department"
+                              ? "bg-orange-500"
+                              : t.chatType === "group"
+                                ? "bg-green-500"
+                                : "bg-primary"
+                          } text-white`}
+                        >
+                          {getChatIcon(t)}
                         </div>
-                        <p className="mt-1 truncate text-sm text-muted-foreground">{preview}</p>
-                        {t.chatType !== "individual" && (
-                          <p className="mt-1 text-xs text-muted-foreground capitalize">{t.chatType} chat</p>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="truncate font-medium text-foreground">{name}</span>
+                              {t.chatType !== "individual" && (
+                                <span className="shrink-0 text-xs text-muted-foreground bg-white/20 px-1.5 py-0.5 rounded">
+                                  {t.participantCount}
+                                </span>
+                              )}
+                            </div>
+                            <span className="shrink-0 text-xs text-muted-foreground">{time}</span>
+                          </div>
+                          <p className="mt-1 truncate text-sm text-muted-foreground">{preview}</p>
+                          {t.chatType !== "individual" && (
+                            <p className="mt-1 text-xs text-muted-foreground capitalize">{t.chatType} chat</p>
+                          )}
+                        </div>
+                        {t.unread > 0 && (
+                          <span className="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground">
+                            {t.unread}
+                          </span>
                         )}
                       </div>
-                      {t.unread > 0 && (
-                        <span className="ml-2 flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground">
-                          {t.unread}
-                        </span>
-                      )}
-                    </div>
-                  </button>
+                    </button>
+
+                    {isAdmin && t.chatType !== "individual" && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => deleteChat(e, t.id, name, t.chatType)}
+                        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                        title={`Delete ${t.chatType} chat`}
+                      >
+                        <TrashIcon />
+                      </Button>
+                    )}
+                  </div>
                 )
               })
             )}
