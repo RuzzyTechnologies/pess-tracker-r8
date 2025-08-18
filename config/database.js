@@ -1,34 +1,31 @@
 const { Pool } = require("pg")
 
-// Parse the connection string
+// Use the same connection string that works with psql
 const connectionString =
-  "postgresql://neondb_owner:npg_ibsPCj43pkWz@ep-shy-meadow-ad83igyf-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+  "postgresql://neondb_owner:npg_ibsPCj43pkWz@ep-shy-meadow-ad83igyf-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
 
 const pool = new Pool({
-  connectionString: connectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  connectionString,
+  ssl: { rejectUnauthorized: false },
   max: 20,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 10000, // longer timeout
 })
 
-// Test database connection
+// Test connection
 async function testConnection() {
   try {
     const client = await pool.connect()
     const result = await client.query("SELECT NOW()")
-    console.log("Database connection test successful:", result.rows[0])
+    console.log("✅ Database connection test successful:", result.rows[0])
     client.release()
     return true
   } catch (error) {
-    console.error("Database connection test failed:", error)
+    console.error("❌ Database connection test failed:", error)
     throw error
   }
 }
 
-// Generic query function
 async function query(text, params) {
   const start = Date.now()
   try {
@@ -42,7 +39,6 @@ async function query(text, params) {
   }
 }
 
-// Transaction helper
 async function transaction(callback) {
   const client = await pool.connect()
   try {
