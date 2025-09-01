@@ -41,44 +41,19 @@ export default function AdminUsersView() {
   const [onlineOnly, setOnlineOnly] = React.useState(false)
   const [q, setQ] = React.useState("")
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null)
-  // Local tick to update "Online"/"Last seen" without data writes (e.g., user goes offline)
-  const [, force] = React.useReducer((x) => x + 1, 0)
-  React.useEffect(() => {
-    const t = setInterval(force, 5_000)
-    return () => clearInterval(t)
+  const [isInviting, setIsInviting] = React.useState(false)
+  const [isDeleting, setIsDeleting] = React.useState<string | null>(null)
+  const [error, setError] = React.useState<string | null>(null)
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  const me = React.useMemo(() => {
+    try {
+      return getCurrentUser()
+    } catch (err) {
+      console.log("[v0] Error getting current user:", err)
+      return null
+    }
   }, [])
-
-  const me = getCurrentUser()!
-
-  const invite = () => {
-    if (!email.trim()) return
-    DataAPI.addUser({ name: name.trim() || email.split("@")[0], email: email.trim().toLowerCase(), role })
-    setName("")
-    setEmail("")
-  }
-
-  const changeRole = (id: string, role: User["role"]) =>
-    update((d) => ({ ...d, users: d.users.map((u) => (u.id === id ? { ...u, role } : u)) }))
-
-  const deleteUser = (userId: string, userName: string) => {
-    if (userId === me.id) {
-      alert("You cannot delete your own account.")
-      return
-    }
-
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${userName}? This will remove their account and all associated data. This action cannot be undone.`,
-      )
-    ) {
-      DataAPI.deleteUser(userId)
-      setDeleteConfirm(null)
-      update((d) => ({ ...d, users: d.users.filter((u) => u.id !== userId) }))
-    }
-  }
-
-  const onlineCount = state.users.filter((u) => isOnline(u)).length
-  const total = state.users.length
 
   const filtered = React.useMemo(() => {
     const term = q.trim().toLowerCase()
@@ -91,9 +66,107 @@ export default function AdminUsersView() {
       .sort((a, b) => Number(isOnline(b)) - Number(isOnline(a)))
   }, [state.users, onlineOnly, q])
 
+  // Local tick to update "Online"/"Last seen" without data writes (e.g., user goes offline)
+  const [, force] = React.useReducer((x) => x + 1, 0)
+  React.useEffect(() => {
+    const t = setInterval(force, 5_000)
+    return () => clearInterval(t)
+  }, [])
+
+  React.useEffect(() => {
+    console.log("[v0] AdminUsersView mounted, users:", state.users)
+    setIsLoading(false)
+  }, [state.users])
+
+  const invite = async () => {
+    if (!email.trim()) return
+    setIsInviting(true)
+    setError(null)
+
+    try {
+      console.log("[v0] Inviting user:", {
+        name: name.trim() || email.split("@")[0],
+        email: email.trim().toLowerCase(),
+        role,
+      })
+      await DataAPI.addUser({ name: name.trim() || email.split("@")[0], email: email.trim().toLowerCase(), role })
+      setName("")
+      setEmail("")
+      console.log("[v0] User invited successfully")
+    } catch (err) {
+      console.log("[v0] Error inviting user:", err)
+      setError(err instanceof Error ? err.message : "Failed to invite user")
+    } finally {
+      setIsInviting(false)
+    }
+  }
+
+  const changeRole = async (id: string, role: User["role"]) => {
+    try {
+      await DataAPI.updateUser(id, { role })
+      update((d) => ({ ...d, users: d.users.map((u) => (u.id === id ? { ...u, role } : u)) }))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update user role")
+    }
+  }
+
+  const deleteUser = async (userId: string, userName: string) => {
+    if (userId === me?.id) {
+      alert("You cannot delete your own account.")
+      return
+    }
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${userName}? This will remove their account and all associated data. This action cannot be undone.`,
+      )
+    ) {
+      setIsDeleting(userId)
+      setError(null)
+
+      try {
+        await DataAPI.deleteUser(userId)
+        setDeleteConfirm(null)
+        update((d) => ({ ...d, users: d.users.filter((u) => u.id !== userId) }))
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to delete user")
+      } finally {
+        setIsDeleting(null)
+      }
+    }
+  }
+
+  const onlineCount = state.users.filter((u) => isOnline(u)).length
+  const total = state.users.length
+
+  if (!me) {
+    return (
+      <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
+        <div className="text-center text-muted-foreground">Please log in to access this page.</div>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="mx-auto w-full max-w-6xl p-4 md:p-6">
+        <div className="text-center text-muted-foreground">Loading users...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto w-full max-w-6xl p-4 md:p-6 space-y-4">
       <h1 className="text-xl font-semibold text-foreground">Teams & Users</h1>
+
+      {error && (
+        <div className="rounded-md border border-red-500/50 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400">
+          {error}
+          <button onClick={() => setError(null)} className="ml-2 text-red-500 hover:text-red-700">
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Presence overview */}
       <Card className="backdrop-blur-lg supports-[backdrop-filter]:bg-white/10 border border-white/20 shadow-lg dark:supports-[backdrop-filter]:bg-slate-900/10 dark:border-slate-700/30">
@@ -128,6 +201,7 @@ export default function AdminUsersView() {
               onChange={(e) => setName(e.target.value)}
               className="border-white/20 dark:border-slate-700/30"
               placeholder="Jane Smith"
+              disabled={isInviting}
             />
           </div>
           <div className="space-y-2 sm:col-span-2">
@@ -138,11 +212,12 @@ export default function AdminUsersView() {
               onChange={(e) => setEmail(e.target.value)}
               className="border-white/20 dark:border-slate-700/30"
               placeholder="jane@example.com"
+              disabled={isInviting}
             />
           </div>
           <div className="space-y-2 sm:col-span-1">
             <Label>Role</Label>
-            <Select value={role} onValueChange={(v) => setRole(v as any)}>
+            <Select value={role} onValueChange={(v) => setRole(v as any)} disabled={isInviting}>
               <SelectTrigger className="border-white/20 dark:border-slate-700/30">
                 <SelectValue placeholder="Role" />
               </SelectTrigger>
@@ -154,9 +229,13 @@ export default function AdminUsersView() {
             </Select>
           </div>
           <div className="sm:col-span-5">
-            <Button className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={invite}>
+            <Button
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={invite}
+              disabled={isInviting || !email.trim()}
+            >
               <UserPlus className="mr-2 h-4 w-4" />
-              Invite
+              {isInviting ? "Inviting..." : "Invite"}
             </Button>
           </div>
         </CardContent>
@@ -184,6 +263,7 @@ export default function AdminUsersView() {
           {filtered.map((u) => {
             const online = isOnline(u)
             const isCurrentUser = u.id === me.id
+            const isBeingDeleted = isDeleting === u.id
             return (
               <div
                 key={u.id}
@@ -209,7 +289,11 @@ export default function AdminUsersView() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Select value={u.role} onValueChange={(v) => changeRole(u.id, v as User["role"])}>
+                  <Select
+                    value={u.role}
+                    onValueChange={(v) => changeRole(u.id, v as User["role"])}
+                    disabled={isBeingDeleted}
+                  >
                     <SelectTrigger className="h-8 w-[160px] border-white/20 dark:border-slate-700/30">
                       <SelectValue placeholder="Role" />
                     </SelectTrigger>
@@ -227,8 +311,13 @@ export default function AdminUsersView() {
                       onClick={() => deleteUser(u.id, u.name)}
                       className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
                       title={`Delete ${u.name}`}
+                      disabled={isBeingDeleted}
                     >
-                      <TrashIcon className="h-4 w-4" />
+                      {isBeingDeleted ? (
+                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                      ) : (
+                        <TrashIcon className="h-4 w-4" />
+                      )}
                     </Button>
                   )}
                 </div>

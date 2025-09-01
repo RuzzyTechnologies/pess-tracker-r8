@@ -2,25 +2,33 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { SESSION_COOKIE, safeEmail, isAdminEmail } from "@/lib/auth"
-
-// Demo in-memory user store (stub). Replace with Postgres/NextAuth in production.
-const users = new Map<string, { name: string; password: string }>()
+import { SESSION_COOKIE, safeEmail } from "@/lib/auth"
 
 type AuthState = {
   error?: string
   message?: string
 }
 
-function setSession(email: string) {
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+
+function setSession(email: string, token: string) {
   const cookieStore = cookies()
-  // Demo cookie for 7 days
+  // Set session cookie with email
   cookieStore.set(SESSION_COOKIE, email, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  })
+
+  // Set auth token cookie
+  cookieStore.set("auth_token", token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
   })
 }
 
@@ -38,18 +46,39 @@ export async function signupAction(_prevState: AuthState, formData: FormData): P
   if (password.length < 6) {
     return { error: "Password must be at least 6 characters." }
   }
-  if (users.has(email)) {
-    return { error: "An account with this email already exists." }
-  }
 
-  users.set(email, { name, password })
-  setSession(email)
+  try {
+    const response = await fetch(`${API_URL}/api/auth/signup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        firstName: name.split(" ")[0] || name,
+        lastName: name.split(" ").slice(1).join(" ") || "",
+        confirmPassword: password,
+      }),
+    })
 
-  // Redirect based on email allowlist
-  if (isAdminEmail(email)) {
-    redirect("/admin")
-  } else {
-    redirect("/staff")
+    const data = await response.json()
+
+    if (!response.ok) {
+      return { error: data.error || "Failed to create account" }
+    }
+
+    setSession(email, data.token)
+
+    // Redirect based on user role from backend response
+    if (data.user.role === "admin") {
+      redirect("/admin")
+    } else {
+      redirect("/staff")
+    }
+  } catch (error) {
+    console.error("Signup error:", error)
+    return { error: "Network error. Please try again." }
   }
 }
 
@@ -60,17 +89,35 @@ export async function loginAction(_prevState: AuthState, formData: FormData): Pr
   if (!email || !password) {
     return { error: "Email and password are required." }
   }
-  const user = users.get(email)
-  if (!user || user.password !== password) {
-    return { error: "Invalid email or password." }
-  }
 
-  setSession(email)
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
+    })
 
-  // Redirect based on email allowlist
-  if (isAdminEmail(email)) {
-    redirect("/admin")
-  } else {
-    redirect("/staff")
+    const data = await response.json()
+
+    if (!response.ok) {
+      return { error: data.error || "Invalid email or password" }
+    }
+
+    setSession(email, data.token)
+
+    // Redirect based on user role from backend response
+    if (data.user.role === "admin") {
+      redirect("/admin")
+    } else {
+      redirect("/staff")
+    }
+  } catch (error) {
+    console.error("Login error:", error)
+    return { error: "Network error. Please try again." }
   }
 }
