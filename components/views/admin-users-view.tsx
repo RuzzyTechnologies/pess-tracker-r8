@@ -45,14 +45,21 @@ export default function AdminUsersView() {
   const [isDeleting, setIsDeleting] = React.useState<string | null>(null)
   const [error, setError] = React.useState<string | null>(null)
   const [isLoading, setIsLoading] = React.useState(true)
+  const [me, setMe] = React.useState<User | null>(null)
 
-  const me = React.useMemo(() => {
-    try {
-      return getCurrentUser()
-    } catch (err) {
-      console.log("[v0] Error getting current user:", err)
-      return null
+  React.useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const user = await getCurrentUser()
+        setMe(user)
+      } catch (err) {
+        console.log("[v0] Error getting current user:", err)
+        setMe(null)
+      } finally {
+        setIsLoading(false)
+      }
     }
+    fetchCurrentUser()
   }, [])
 
   const filtered = React.useMemo(() => {
@@ -75,7 +82,6 @@ export default function AdminUsersView() {
 
   React.useEffect(() => {
     console.log("[v0] AdminUsersView mounted, users:", state.users)
-    setIsLoading(false)
   }, [state.users])
 
   const invite = async () => {
