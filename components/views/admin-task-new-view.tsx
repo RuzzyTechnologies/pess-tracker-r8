@@ -18,12 +18,34 @@ export default function AdminTaskNewView() {
   const [title, setTitle] = React.useState("")
   const [priority, setPriority] = React.useState<"Low" | "Medium" | "High">("Medium")
   const [status, setStatus] = React.useState<"Todo" | "In Progress" | "Done">("Todo")
-  const [projectId, setProjectId] = React.useState<string | undefined>(state.projects[0]?.id)
+  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null)
+  const [fileError, setFileError] = React.useState<string>("")
   const [due, setDue] = React.useState<string>("")
   const [assignee, setAssignee] = React.useState<string>("unassigned")
 
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string>("")
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    setFileError("")
+
+    if (!file) {
+      setUploadedFile(null)
+      return
+    }
+
+    // Check file size (500MB = 500 * 1024 * 1024 bytes)
+    const maxSize = 500 * 1024 * 1024
+    if (file.size > maxSize) {
+      setFileError(`File size exceeds 500MB limit. Selected file is ${(file.size / (1024 * 1024)).toFixed(1)}MB`)
+      event.target.value = "" // Clear the input
+      setUploadedFile(null)
+      return
+    }
+
+    setUploadedFile(file)
+  }
 
   const handleSubmit = async () => {
     if (isSubmitting) return
@@ -47,10 +69,11 @@ export default function AdminTaskNewView() {
         title: title.trim(),
         priority,
         status,
-        projectId,
         dueDate: due ? new Date(due).toISOString() : undefined,
         assignee: assignee === "unassigned" ? undefined : assignee,
         createdById: me?.id,
+        attachmentName: uploadedFile?.name,
+        attachmentSize: uploadedFile?.size,
       })
       router.push("/admin/tasks")
     } catch (err) {
@@ -109,19 +132,21 @@ export default function AdminTaskNewView() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label>Project</Label>
-              <Select value={projectId} onValueChange={(v) => setProjectId(v)} disabled={isSubmitting}>
-                <SelectTrigger className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10">
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {state.projects.map((p) => (
-                    <SelectItem value={p.id} key={p.id}>
-                      {p.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="file-upload">File Upload</Label>
+              <Input
+                id="file-upload"
+                type="file"
+                onChange={handleFileUpload}
+                className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+                disabled={isSubmitting}
+              />
+              {uploadedFile && (
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  Selected: {uploadedFile.name} ({(uploadedFile.size / (1024 * 1024)).toFixed(1)}MB)
+                </p>
+              )}
+              {fileError && <p className="text-sm text-red-600 dark:text-red-400">{fileError}</p>}
+              <p className="text-xs text-muted-foreground">Maximum file size: 500MB</p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="due">Due date</Label>
