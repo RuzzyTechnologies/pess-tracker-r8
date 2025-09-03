@@ -2,12 +2,34 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { SESSION_COOKIE, safeEmail, isAdminEmail } from "@/lib/auth"
-import { DataAPI } from "@/lib/data"
+import { SESSION_COOKIE, safeEmail } from "@/lib/auth"
 
 type AuthState = {
   error?: string
   message?: string
+}
+
+const tempUsers = new Map<string, { name: string; email: string; password: string; role: string }>()
+
+const ALLOWED_DOMAINS = [
+  "@outdoors.ng",
+  "@xpark360.com",
+  "@pdma.io",
+  "@ess.com.ng",
+  "@premiumdigitalmarketing.ng",
+  "@essdigital.ng",
+]
+
+const ADMIN_EMAIL_PREFIXES = ["elimian.moses", "michael.emelieze", "salvation.alibor"]
+
+function isAllowedEmail(email: string): boolean {
+  return ALLOWED_DOMAINS.some((domain) => email.toLowerCase().endsWith(domain.toLowerCase()))
+}
+
+function getUserRole(email: string): string {
+  const emailLower = email.toLowerCase()
+  const hasAdminPrefix = ADMIN_EMAIL_PREFIXES.some((prefix) => emailLower.startsWith(prefix.toLowerCase()))
+  return hasAdminPrefix ? "admin" : "staff"
 }
 
 function setSession(email: string) {
@@ -36,13 +58,22 @@ export async function signupAction(_prevState: AuthState, formData: FormData): P
     return { error: "Password must be at least 6 characters." }
   }
 
+  if (!isAllowedEmail(email)) {
+    return { error: "Access denied. Please use an authorized email domain." }
+  }
+
+  if (tempUsers.has(email.toLowerCase())) {
+    return { error: "An account with this email already exists." }
+  }
+
   try {
-    const role = isAdminEmail(email) ? "admin" : "staff"
-    DataAPI.addUser({
+    const role = getUserRole(email)
+
+    tempUsers.set(email.toLowerCase(), {
       name,
       email,
+      password, // In production, this should be hashed
       role,
-      lastActiveAt: new Date().toISOString(),
     })
 
     setSession(email)
@@ -51,7 +82,7 @@ export async function signupAction(_prevState: AuthState, formData: FormData): P
     return { error: "Failed to create account. Please try again." }
   }
 
-  const role = isAdminEmail(email) ? "admin" : "staff"
+  const role = getUserRole(email)
   if (role === "admin") {
     redirect("/admin")
   } else {
@@ -67,29 +98,26 @@ export async function loginAction(_prevState: AuthState, formData: FormData): Pr
     return { error: "Email and password are required." }
   }
 
-  let userRole: string
+  if (!isAllowedEmail(email)) {
+    return { error: "Access denied. Please use an authorized email domain." }
+  }
 
   try {
-    const data = JSON.parse(localStorage.getItem("pess:data") || "{}")
-    const user = data.users?.find((u: any) => u.email.toLowerCase() === email.toLowerCase())
+    const user = tempUsers.get(email.toLowerCase())
 
-    if (!user) {
+    if (!user || user.password !== password) {
       return { error: "Invalid email or password" }
     }
 
-    // Update user's last active timestamp
-    DataAPI.updateUserByEmail(email, { lastActiveAt: new Date().toISOString() })
-
     setSession(email)
-    userRole = user.role
+
+    if (user.role === "admin") {
+      redirect("/admin")
+    } else {
+      redirect("/staff")
+    }
   } catch (error) {
     console.error("Login error:", error)
     return { error: "Login failed. Please try again." }
-  }
-
-  if (userRole === "admin") {
-    redirect("/admin")
-  } else {
-    redirect("/staff")
   }
 }
