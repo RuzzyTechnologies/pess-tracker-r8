@@ -18,7 +18,7 @@ export default function AdminTaskNewView() {
   const [title, setTitle] = React.useState("")
   const [priority, setPriority] = React.useState<"Low" | "Medium" | "High">("Medium")
   const [status, setStatus] = React.useState<"Todo" | "In Progress" | "Done">("Todo")
-  const [uploadedFile, setUploadedFile] = React.useState<File | null>(null)
+  const [uploadedFiles, setUploadedFiles] = React.useState<File[]>([])
   const [fileError, setFileError] = React.useState<string>("")
   const [due, setDue] = React.useState<string>("")
   const [assignee, setAssignee] = React.useState<string>("unassigned")
@@ -26,31 +26,39 @@ export default function AdminTaskNewView() {
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string>("")
 
+  const totalFileSize = uploadedFiles.reduce((total, file) => total + file.size, 0)
+  const maxTotalSize = 500 * 1024 * 1024 // 500MB in bytes
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const files = Array.from(event.target.files || [])
     setFileError("")
 
-    if (!file) {
-      setUploadedFile(null)
+    if (files.length === 0) return
+
+    const newFilesSize = files.reduce((total, file) => total + file.size, 0)
+    const wouldExceedLimit = totalFileSize + newFilesSize > maxTotalSize
+
+    if (wouldExceedLimit) {
+      const remainingSpace = maxTotalSize - totalFileSize
+      setFileError(
+        `Adding these files would exceed the 500MB total limit. You have ${(remainingSpace / (1024 * 1024)).toFixed(1)}MB remaining.`,
+      )
+      event.target.value = ""
       return
     }
 
-    // Check file size (500MB = 500 * 1024 * 1024 bytes)
-    const maxSize = 500 * 1024 * 1024
-    if (file.size > maxSize) {
-      setFileError(`File size exceeds 500MB limit. Selected file is ${(file.size / (1024 * 1024)).toFixed(1)}MB`)
-      event.target.value = "" // Clear the input
-      setUploadedFile(null)
-      return
-    }
+    setUploadedFiles((prev) => [...prev, ...files])
+    event.target.value = ""
+  }
 
-    setUploadedFile(file)
+  const removeFile = (indexToRemove: number) => {
+    setUploadedFiles((prev) => prev.filter((_, index) => index !== indexToRemove))
+    setFileError("")
   }
 
   const handleSubmit = async () => {
     if (isSubmitting) return
 
-    // Validation
     if (!title.trim()) {
       setError("Task title is required")
       return
@@ -72,8 +80,8 @@ export default function AdminTaskNewView() {
         dueDate: due ? new Date(due).toISOString() : undefined,
         assignee: assignee === "unassigned" ? undefined : assignee,
         createdById: me?.id,
-        attachmentName: uploadedFile?.name,
-        attachmentSize: uploadedFile?.size,
+        attachmentName: uploadedFiles.length > 0 ? uploadedFiles.map((f) => f.name).join(", ") : undefined,
+        attachmentSize: uploadedFiles.length > 0 ? totalFileSize : undefined,
       })
       router.push("/admin/tasks")
     } catch (err) {
@@ -136,17 +144,54 @@ export default function AdminTaskNewView() {
               <Input
                 id="file-upload"
                 type="file"
+                multiple
                 onChange={handleFileUpload}
                 className="border-white/20 dark:border-slate-700/30 bg-white/10 dark:bg-slate-900/10 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
-                disabled={isSubmitting}
+                disabled={isSubmitting || totalFileSize >= maxTotalSize}
               />
-              {uploadedFile && (
+
+              {uploadedFiles.length > 0 && (
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-white/5 dark:bg-slate-800/20 rounded border border-white/10 dark:border-slate-700/20"
+                    >
+                      <span className="text-sm text-foreground truncate flex-1">
+                        {file.name} ({(file.size / (1024 * 1024)).toFixed(1)}MB)
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        className="ml-2 h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-100/10"
+                        disabled={isSubmitting}
+                      >
+                        ×
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {uploadedFiles.length > 0 && (
                 <p className="text-sm text-green-600 dark:text-green-400">
-                  Selected: {uploadedFile.name} ({(uploadedFile.size / (1024 * 1024)).toFixed(1)}MB)
+                  Total: {(totalFileSize / (1024 * 1024)).toFixed(1)}MB / 500MB
+                  {totalFileSize < maxTotalSize && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      ({((maxTotalSize - totalFileSize) / (1024 * 1024)).toFixed(1)}MB remaining)
+                    </span>
+                  )}
                 </p>
               )}
+
               {fileError && <p className="text-sm text-red-600 dark:text-red-400">{fileError}</p>}
-              <p className="text-xs text-muted-foreground">Maximum file size: 500MB</p>
+              <p className="text-xs text-muted-foreground">
+                Maximum total size: 500MB • Select multiple files
+                {totalFileSize >= maxTotalSize && " • Limit reached"}
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="due">Due date</Label>
