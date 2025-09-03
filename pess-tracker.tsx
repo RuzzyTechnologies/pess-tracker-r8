@@ -42,7 +42,7 @@ function SurfaceCard(props: React.ComponentProps<typeof Card>) {
         /* Enhanced glassmorphism effects with more transparency and stronger blur */
         "backdrop-blur-lg supports-[backdrop-filter]:bg-card/10",
         "border border-white/20 shadow-lg dark:border-slate-700/30",
-        "transition-all hover:shadow-xl hover:-translate-y-[1px] active:translate-y-0",
+        "transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02] active:translate-y-0 active:scale-100",
         "hover:bg-card/20 dark:hover:bg-card/15",
         props.className,
       ].join(" ")}
